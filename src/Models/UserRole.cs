@@ -16,5 +16,6 @@ namespace taller1.src.Models
         [Required]
         [StringLength(255)]
         public string Role { get; set; } = string.Empty;
+        public List<User> Users { get; set; } = [];
     }
 }

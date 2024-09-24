@@ -24,5 +24,7 @@ namespace taller1.src.Models
         [Required]
         public int Quantity { get; set; }
 
+        public ShoppingCart ShoppingCart { get; set; } = null!;
+        public Product Product { get; set; } = null!;
     }
 }

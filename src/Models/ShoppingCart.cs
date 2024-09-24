@@ -17,5 +17,7 @@ namespace taller1.src.Models
         [Required]
         public int UserID { get; set; }
 
+        public User User { get; set; } = null!;
+        public List<ShoppingCartItem> ShoppingCartItems { get; set; } = [];
     }
 }

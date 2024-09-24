@@ -32,5 +32,8 @@ namespace taller1.src.Models
         [StringLength(255)]
         public string Image { get; set; } = string.Empty;
 
+        public List<ReceiptItemDetail> ReceiptItemDetail { get; set; } = [];
+        public List<ShoppingCartItem> ShoppingCartItem { get; set; } = [];
+        public ProductType ProductType { get; set; } = null!;
     }
 }

@@ -41,5 +41,7 @@ namespace taller1.src.Models
         [Column(TypeName = "decimal(9, 2)")]
         public decimal Total { get; set; }
 
+        public User User { get; set; } = null!;
+        public List<ReceiptItemDetail> ReceiptItemDetail { get; set; } = [];
     }
 }

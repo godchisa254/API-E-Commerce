@@ -16,5 +16,7 @@ namespace taller1.src.Models
         [Required]
         [StringLength(255)]
         public string Type { get; set; } = string.Empty;
+        
+        public List<Product> Products { get; set; } = [];
     }
 }
