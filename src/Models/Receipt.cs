@@ -42,6 +42,6 @@ namespace taller1.src.Models
         public decimal Total { get; set; }
 
         public User User { get; set; } = null!;
-        public List<ReceiptItemDetail> ReceiptItemDetail { get; set; } = [];
+        public List<ReceiptItemDetail> ReceiptItemDetails { get; set; } = [];
     }
 }
