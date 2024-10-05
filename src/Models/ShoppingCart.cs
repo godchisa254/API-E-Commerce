@@ -13,11 +13,11 @@ namespace taller1.src.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("AppUser")]
         [Required]
-        public int UserID { get; set; }
+        public string UserID { get; set; } = string.Empty;
 
-        public User User { get; set; } = null!;
+        public AppUser AppUser { get; set; } = null!;
         public List<ShoppingCartItem> ShoppingCartItems { get; set; } = [];
     }
 }

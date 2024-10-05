@@ -36,9 +36,10 @@ namespace taller1.src.Controllers
 
                 var appUser = new AppUser
                     {
-                        UserName = registerDto.Name,
+                        UserName = registerDto.Email,  
                         Email = registerDto.Email,
                         Rut = registerDto.Rut,
+                        Name = registerDto.Name,  
                         Birthdate = registerDto.Birthdate,
                         Gender = registerDto.Gender
                     };
@@ -76,5 +77,14 @@ namespace taller1.src.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+                return Ok("AuthController is working");
+        }
+
+
+
     }
 }
