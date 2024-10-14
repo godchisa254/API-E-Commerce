@@ -32,7 +32,7 @@ namespace taller1.src.Controllers
 
                 }
 
-                //TODO: crear un exist by code y un exist by email 
+                //TODO: crear un exist by code 
 
                 var appUser = new AppUser
                     {
@@ -77,14 +77,6 @@ namespace taller1.src.Controllers
                 return StatusCode(500, e.Message);
             }
         }
-
-        [HttpGet("test")]
-        public IActionResult Test()
-        {
-                return Ok("AuthController is working");
-        }
-
-
 
     }
 }

@@ -5,15 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using taller1.src.Data;
 using taller1.src.Interface;
-using taller1.src.Models;
 
 namespace taller1.src.Repository
 {
-    public class AppUserRepository : IAppUserRepository
+    public class AuthRepository : IAuthRepository
     {
         private readonly ApplicationDBContext _context;
 
-        public AppUserRepository(ApplicationDBContext context)
+        public AuthRepository(ApplicationDBContext context)
         {
             _context = context;
         }
