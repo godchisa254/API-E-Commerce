@@ -29,16 +29,14 @@ namespace taller1.src.Repository
             return await _context.Users.AnyAsync(u => u.Rut == rut);
         }
 
-        public async Task<bool> CreateUserAsync(AppUser user, string password)
+        public async Task<IdentityResult> CreateUserAsync(AppUser user, string password)
         {
-            var resultCreate = await _userManager.CreateAsync(user, password);
-            return resultCreate.Succeeded;
+            return await _userManager.CreateAsync(user, password);
         }
 
-        public async Task<bool> AddRole(AppUser user, string role)
+        public async Task<IdentityResult> AddRole(AppUser user, string role)
         {
-            var resultRole = await _userManager.AddToRoleAsync(user, role);
-            return resultRole.Succeeded;
+            return await _userManager.AddToRoleAsync(user, role);
         }
     }
 }

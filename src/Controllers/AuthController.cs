@@ -56,24 +56,32 @@ namespace taller1.src.Controllers
 
                 var createUser = await _authRepository.CreateUserAsync(appUser, registerDto.Password);
 
-                if(createUser)
+                if(createUser.Succeeded)
                 {
                     var role = await _authRepository.AddRole(appUser, "User");
 
-                    if(role)
+                    if(role.Succeeded)
                     {
                         return Ok("User created successfully");
                     }
                     else
                     {
-                        return StatusCode(500);
+                        return StatusCode(500, role.Errors.Select(e => e.Description));
                  
                     }
 
 
                 } else 
                 {
-                    return StatusCode(500);
+
+                    var errors = createUser.Errors.Select(e => e.Description);
+
+                    if(errors.Any(e => e.Contains("Username")))
+                    {
+                        errors = errors.Select(e => e.Replace("Username", "Email")).ToList();
+                    }
+
+                    return StatusCode(500, errors);
                 }
 
 
