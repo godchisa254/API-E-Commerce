@@ -13,7 +13,7 @@ namespace taller1.src.Dtos
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        public DateTime Birthdate { get; set; }
+        public DateOnly Birthdate { get; set; }
 
         [Required]
         [Range(0, 4)]
