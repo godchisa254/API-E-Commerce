@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace taller1.src.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class newMigrations : Migration
+    public partial class NewMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,7 @@ namespace taller1.src.Data.Migrations
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     Rut = table.Column<string>(type: "varchar", maxLength: 12, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    Birthdate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Birthdate = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     Gender = table.Column<int>(type: "INTEGER", nullable: false),
                     Password = table.Column<string>(type: "varchar", maxLength: 20, nullable: false),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),

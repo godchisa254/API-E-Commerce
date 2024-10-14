@@ -167,7 +167,7 @@ namespace taller1.src.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Birthdate")
+                    b.Property<DateOnly>("Birthdate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")

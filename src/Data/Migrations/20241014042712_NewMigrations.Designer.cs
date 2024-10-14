@@ -11,8 +11,8 @@ using taller1.src.Data;
 namespace taller1.src.Data.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20241005165814_newMigrations")]
-    partial class newMigrations
+    [Migration("20241014042712_NewMigrations")]
+    partial class NewMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,7 +170,7 @@ namespace taller1.src.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Birthdate")
+                    b.Property<DateOnly>("Birthdate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")

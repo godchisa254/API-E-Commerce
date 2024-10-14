@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using taller1.src.Dtos;
+using taller1.src.Interface;
 using taller1.src.Models;
 
 
@@ -14,25 +15,29 @@ namespace taller1.src.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
+        private readonly IAuthRepository _authRepository;
 
-        public AuthController(UserManager<AppUser> userManager)
+        public AuthController(IAuthRepository authRepository)
         {
-            _userManager = userManager;
-
+            _authRepository = authRepository;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegristationDto registerDto)
         {
             try{
-                if(!ModelState.IsValid)
+
+                bool exist = await _authRepository.ExistByRut(registerDto.Rut);
+                if(exist)
+                {
+                    return StatusCode(409, "El rut ingresado ya existe");
+                }
+                else if(!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
 
                 }
 
-                //TODO: crear un exist by code 
 
                 var appUser = new AppUser
                     {
@@ -49,26 +54,26 @@ namespace taller1.src.Controllers
                     return BadRequest("Password is requerid");
                 }
 
-                var createUser = await _userManager.CreateAsync(appUser, registerDto.Password);
+                var createUser = await _authRepository.CreateUserAsync(appUser, registerDto.Password);
 
-                if(createUser.Succeeded)
+                if(createUser)
                 {
-                    var role = await _userManager.AddToRoleAsync(appUser, "User");
+                    var role = await _authRepository.AddRole(appUser, "User");
 
-                    if(role.Succeeded)
+                    if(role)
                     {
                         return Ok("User created successfully");
                     }
                     else
                     {
-                        return StatusCode(500, role.Errors);
+                        return StatusCode(500);
                  
                     }
 
 
                 } else 
                 {
-                    return StatusCode(500, createUser.Errors);
+                    return StatusCode(500);
                 }
 
 
