@@ -14,9 +14,9 @@ namespace taller1.src.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("AppUser")]
         [Required]
-        public int UserID { get; set; }
+        public string UserID { get; set; } = string.Empty;
 
         [Required]
         [StringLength(255)]
@@ -41,7 +41,7 @@ namespace taller1.src.Models
         [Column(TypeName = "decimal(9, 2)")]
         public decimal Total { get; set; }
 
-        public User User { get; set; } = null!;
+        public AppUser User { get; set; } = null!;
         public List<ReceiptItemDetail> ReceiptItemDetails { get; set; } = [];
     }
 }

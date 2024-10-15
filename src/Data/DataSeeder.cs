@@ -9,6 +9,7 @@ namespace taller1.src.Data.Migrations
 {
     public class DataSeeder
     {
+        /**
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var scope = serviceProvider.CreateScope())
@@ -102,6 +103,6 @@ namespace taller1.src.Data.Migrations
             int verification = 11 - (sum % 11);
             return verification == 11 ? 0 : verification;
         }
-        
+        **/
     }
 }
