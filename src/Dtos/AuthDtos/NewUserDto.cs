@@ -23,6 +23,6 @@ namespace taller1.src.Dtos.AuthDtos
         [StringLength(255)]
         public string Email { get; set; } = string.Empty;
 
-        string Token { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using taller1.src.Dtos;
+using taller1.src.Dtos.AuthDtos;
 using taller1.src.Interface;
 using taller1.src.Models;
 
@@ -17,9 +18,12 @@ namespace taller1.src.Controllers
     {
         private readonly IAuthRepository _authRepository;
 
-        public AuthController(IAuthRepository authRepository)
+        private readonly ITokenService _tokenService;
+
+        public AuthController(IAuthRepository authRepository, ITokenService tokenService)
         {
             _authRepository = authRepository;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -62,7 +66,14 @@ namespace taller1.src.Controllers
 
                     if(role.Succeeded)
                     {
-                        return Ok("User created successfully");
+                        return Ok(
+                            new NewUserDto
+                            {
+                                Name = appUser.Name,
+                                Email = appUser.Email,
+                                Token = _tokenService.CreateToken(appUser)
+                            }
+                        );
                     }
                     else
                     {

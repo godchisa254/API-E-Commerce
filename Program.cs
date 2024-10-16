@@ -7,10 +7,12 @@ using taller1.src.Data;
 using taller1.src.Interface;
 using taller1.src.Models;
 using taller1.src.Repository;
+using taller1.src.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/
 builder.Services.AddEndpointsApiExplorer();
@@ -59,6 +61,7 @@ string connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ?? 
 builder.Services.AddDbContext<ApplicationDBContext>(opt => opt.UseSqlite(connectionString));
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 
@@ -67,6 +70,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using(var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDBContext>();
+    await context.Database.MigrateAsync();
 }
 
 //app.UseHttpsRedirection();
