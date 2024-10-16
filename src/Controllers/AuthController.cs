@@ -69,6 +69,7 @@ namespace taller1.src.Controllers
                         return Ok(
                             new NewUserDto
                             {
+                                Rut = appUser.Rut,
                                 Name = appUser.Name,
                                 Email = appUser.Email,
                                 Token = _tokenService.CreateToken(appUser)
