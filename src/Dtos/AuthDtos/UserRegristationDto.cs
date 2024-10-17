@@ -34,5 +34,11 @@ namespace taller1.src.Dtos
         [StringLength(20)]
         [Column(TypeName = "varchar")]
         public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(20)]
+        [Column(TypeName = "varchar")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+        
     }
 }

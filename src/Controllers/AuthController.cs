@@ -55,7 +55,12 @@ namespace taller1.src.Controllers
 
                 if(string.IsNullOrEmpty(registerDto.Password))
                 {
-                    return BadRequest("Password is requerid");
+                    return BadRequest("La contraseña es requerida");
+                }
+
+                if(registerDto.Password != registerDto.ConfirmPassword)
+                {
+                    return BadRequest("La contraseña y Confirmacion de contraseña deben ser iguales");
                 }
 
                 var createUser = await _authRepository.CreateUserAsync(appUser, registerDto.Password);
