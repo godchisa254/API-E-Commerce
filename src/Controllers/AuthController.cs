@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using taller1.src.Dtos;
 using taller1.src.Dtos.AuthDtos;
 using taller1.src.Interface;
@@ -14,16 +16,20 @@ namespace taller1.src.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _authRepository;
 
         private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthRepository authRepository, ITokenService tokenService)
+        private readonly SignInManager<AppUser> _signInManager;
+
+        public AuthController(IAuthRepository authRepository, ITokenService tokenService, SignInManager<AppUser> signInManager)
         {
             _authRepository = authRepository;
             _tokenService = tokenService;
+            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -32,6 +38,7 @@ namespace taller1.src.Controllers
             try{
 
                 bool exist = await _authRepository.ExistByRut(registerDto.Rut);
+                
                 if(exist)
                 {
                     return StatusCode(409, "El rut ingresado ya existe");
@@ -55,7 +62,12 @@ namespace taller1.src.Controllers
 
                 if(string.IsNullOrEmpty(registerDto.Password))
                 {
-                    return BadRequest("Password is requerid");
+                    return BadRequest("La contraseña es requerida");
+                }
+
+                if(registerDto.Password != registerDto.ConfirmPassword)
+                {
+                    return BadRequest("La contraseña y Confirmacion de contraseña deben ser iguales");
                 }
 
                 var createUser = await _authRepository.CreateUserAsync(appUser, registerDto.Password);
@@ -103,5 +115,46 @@ namespace taller1.src.Controllers
             }
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            try
+            {
+                if(!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var appUser = await _authRepository.GetUserByEmail(loginDto.Email);
+
+                if(appUser == null)
+                {
+                    return NotFound("Correo o Contraseña Invalidos");
+                }   
+
+                var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginDto.Password, false);
+
+                if(!result.Succeeded || appUser == null)
+                {
+                    return Unauthorized("Correo o Contraseña Invalidos");
+                }
+
+                return Ok(
+                    new NewUserDto
+                    {
+                        Rut = appUser.Rut!,
+                        Name = appUser.Name!,
+                        Email = appUser.Email!,
+                        Token = _tokenService.CreateToken(appUser)
+                    }
+                );
+
+
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }
