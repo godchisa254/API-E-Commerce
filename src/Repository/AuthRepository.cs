@@ -38,5 +38,10 @@ namespace taller1.src.Repository
         {
             return await _userManager.AddToRoleAsync(user, role);
         }
+
+        public async Task<AppUser?> GetUserByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
     }
 }

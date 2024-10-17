@@ -14,5 +14,7 @@ namespace taller1.src.Interface
         Task<IdentityResult> CreateUserAsync(AppUser user, string password);
 
         Task<IdentityResult> AddRole(AppUser user, string role);
+
+        Task<AppUser?> GetUserByEmail(string email);
     }
 }
