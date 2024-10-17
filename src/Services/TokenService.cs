@@ -38,7 +38,9 @@ namespace taller1.src.Services
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.Name!)
+                new Claim(JwtRegisteredClaimNames.GivenName, user.Name!),
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id!),
+                new Claim(ClaimTypes.Role, "User")
             };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -46,7 +48,7 @@ namespace taller1.src.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddHours(2),
+                Expires = DateTime.Now.AddHours(24),
                 SigningCredentials = creds,
                 Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
                 Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")

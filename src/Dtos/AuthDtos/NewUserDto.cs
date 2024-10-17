@@ -9,6 +9,7 @@ namespace taller1.src.Dtos.AuthDtos
 {
     public class NewUserDto
     {
+
         [Required]
         [StringLength(12)]
         [Column(TypeName = "varchar")]
