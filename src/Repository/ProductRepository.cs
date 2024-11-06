@@ -19,6 +19,43 @@ namespace taller1.src.Repository
             _context = context;
         }
 
+        public async Task<List<Product>> GetAll(QueryObject query)
+        {
+            var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
+            var pageSize = query.PageSize > 0 ? query.PageSize : 10;
+            var products = _context.Products.AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(query.Name))
+            {
+                products = products.Where(x => x.Name.Contains(query.Name));
+            }
+
+            if(!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                var propertyInfo = typeof(Product).GetProperty(query.SortBy);
+                if (propertyInfo != null)
+                {
+                    products = query.IsDescending ? products.OrderByDescending(x => EF.Property<object>(x, query.SortBy)) : products.OrderBy(x => EF.Property<object>(x, query.SortBy));
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid sort property: {query.SortBy}");
+                }
+            }
+
+            var skipNumber = (pageNumber - 1) * pageSize;
+            return await products.Skip(skipNumber).Take(pageSize).ToListAsync();
+        }
+
+        public async Task<Product?> GetById(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                throw new KeyNotFoundException($"Product with ID {id} not found.");
+            }
+            return product;
+        }
 
         public async Task<Product> CreateProduct(Product product)
         {
