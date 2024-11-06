@@ -14,8 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/
+var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+    var cloudinaryAccount = new Account(
+        cloudinarySettings!.CloudName,
+        cloudinarySettings.ApiKey,
+        cloudinarySettings.ApiSecret
+    );
+    var cloudinary = new Cloudinary(cloudinaryAccount);
+    builder.Services.AddSingleton(cloudinary);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -99,6 +106,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 using(var scope = app.Services.CreateScope())
