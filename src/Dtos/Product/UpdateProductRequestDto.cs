@@ -9,8 +9,8 @@ namespace taller1.src.Dtos.Product
     {
         public int? ProductTypeID { get; set; }
         public string? Name { get; set; } = string.Empty;
-        public int? Price { get; set; }        
-        public string? Stock { get; set; } = string.Empty;
+        public decimal? Price { get; set; }        
+        public int? Stock { get; set; } 
         public string? Image { get; set; } = string.Empty;
     }
 }

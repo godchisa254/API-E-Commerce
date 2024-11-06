@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using taller1.src.Data;
-using taller1.src.Dtos;
+using taller1.src.Dtos.Product;
 using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Models;
+using taller1.src.Mappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace taller1.src.Repository
@@ -19,7 +20,7 @@ namespace taller1.src.Repository
             _context = context;
         }
 
-        public async Task<List<Product>> GetAll(QueryObject query)
+        public async Task<List<GetProductDto>> GetAll(QueryObject query)
         {
             var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
             var pageSize = query.PageSize > 0 ? query.PageSize : 10;
@@ -44,29 +45,34 @@ namespace taller1.src.Repository
             }
 
             var skipNumber = (pageNumber - 1) * pageSize;
-            return await products.Skip(skipNumber).Take(pageSize).ToListAsync();
+
+            var productModels = await products.Skip(skipNumber).Take(pageSize).ToListAsync();
+
+            var productDtos = productModels.Select(x => x.ToGetProductDto()).ToList();
+
+            return productDtos;
         }
 
-        public async Task<Product?> GetById(int id)
+        public async Task<GetProductDto?> GetById(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var productModel = await _context.Products.FindAsync(id);
+            if (productModel == null)
             {
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
             }
-            return product;
+            return productModel.ToGetProductDto();
         }
 
-        public async Task<Product> CreateProduct(Product product)
+        public async Task<GetProductDto> CreateProduct(Product productModel)
         {
-            await _context.Products.AddAsync(product);
+            await _context.Products.AddAsync(productModel);
             await _context.SaveChangesAsync();
-            return product;
+            return productModel.ToGetProductDto();
         }
 
-        public async Task<Product?> UpdateProduct(int id, UpdateProductRequestDto productDto)
+        public async Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto)
         {
-            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.ID == id);
             if (productModel == null)
             {
                 throw new Exception("Product not found");
@@ -77,14 +83,14 @@ namespace taller1.src.Repository
             productModel.Price = productDto.Price ?? productModel.Price;
             productModel.Stock = productDto.Stock ?? productModel.Stock;
             productModel.Image = productDto.Image ?? productModel.Image;
-
+            
             await _context.SaveChangesAsync();
-            return productModel;
+            return productModel.ToGetProductDto();
         }
 
-        public async Task<Product?> DeleteProduct(int id)
+        public async Task<GetProductDto?> DeleteProduct(int id)
         {
-            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.ID == id);
             if (productModel == null)
             {
                 throw new Exception("Product not found");
@@ -92,7 +98,7 @@ namespace taller1.src.Repository
 
             _context.Products.Remove(productModel);
             await _context.SaveChangesAsync();
-            return productModel;
+            return productModel.ToGetProductDto();
         }
     }
 }

@@ -1,10 +1,12 @@
 using System.Text;
+using CloudinaryDotNet;
 using DotNetEnv;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using taller1.src.Data;
+using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Models;
 using taller1.src.Repository;
