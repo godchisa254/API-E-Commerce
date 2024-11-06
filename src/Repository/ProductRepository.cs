@@ -20,6 +20,13 @@ namespace taller1.src.Repository
         }
 
 
+        public async Task<Product> CreateProduct(Product product)
+        {
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+            return product;
+        }
+
         public async Task<Product?> UpdateProduct(int id, UpdateProductRequestDto productDto)
         {
             var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
