@@ -20,6 +20,24 @@ namespace taller1.src.Repository
         }
 
 
+        public async Task<Product?> UpdateProduct(int id, UpdateProductRequestDto productDto)
+        {
+            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            if (productModel == null)
+            {
+                throw new Exception("Product not found");
+            }
+
+            productModel.ProductTypeID = productDto.ProductTypeID ?? productModel.ProductTypeID;
+            productModel.Name = productDto.Name ?? productModel.Name;
+            productModel.Price = productDto.Price ?? productModel.Price;
+            productModel.Stock = productDto.Stock ?? productModel.Stock;
+            productModel.Image = productDto.Image ?? productModel.Image;
+
+            await _context.SaveChangesAsync();
+            return productModel;
+        }
+
         public async Task<Product?> DeleteProduct(int id)
         {
             var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
