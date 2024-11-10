@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using taller1.src.Data;
-using taller1.src.Dtos.Product;
+using taller1.src.Dtos.ProductDtos;
 using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Models;
