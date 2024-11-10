@@ -66,7 +66,7 @@ namespace taller1.src.Controllers.ProductControllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        // [Authorize (Roles = "Admin")] 
+        [Authorize (Roles = "Admin")] 
         public async Task<IActionResult> Post([FromForm] CreateProductRequestDto request)
         {
             if(!ModelState.IsValid)
@@ -94,7 +94,7 @@ namespace taller1.src.Controllers.ProductControllers
         [HttpPut]
         [Route("{id:int}")]
         [Consumes("multipart/form-data")]
-        // [Authorize (Roles = "Admin")] 
+        [Authorize (Roles = "Admin")] 
         public async Task<IActionResult> Put([FromRoute] int id, [FromForm] UpdateProductRequestDto request)
         {
             if(!ModelState.IsValid)
@@ -124,6 +124,24 @@ namespace taller1.src.Controllers.ProductControllers
                 return NotFound();
             }
             return Ok(getProductDto);
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        [Authorize (Roles = "Admin")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var product = await _productRepository.DeleteProduct(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(product);
         }
         
         private async Task<string?> UploadImage(IFormFile image)
