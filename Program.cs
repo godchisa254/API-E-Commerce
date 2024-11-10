@@ -100,6 +100,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(opt => opt.UseSqlite(connect
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
 
@@ -115,7 +116,8 @@ using(var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDBContext>();
-    await context.Database.MigrateAsync();
+    await context.Database.MigrateAsync();   
+    await DataSeeder.InitializeAsync(services);
 }
 
 //app.UseHttpsRedirection();
