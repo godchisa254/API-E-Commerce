@@ -13,8 +13,8 @@ namespace taller1.src.Interface
         Task<List<GetProductDto>> GetAll(QueryObject query);
         Task<GetProductDto?> GetById(int id);
         Task<GetProductDto> CreateProduct(Product productModel);
-        Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto);
+        Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto, string? imageUrl);
         Task<GetProductDto?> DeleteProduct(int id);
-        Task<bool> ProductExists(string name, int productTypeId);
+        Task<bool> ProductExists(string? name, int? productTypeId);
     }
 }

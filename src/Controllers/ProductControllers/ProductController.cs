@@ -69,36 +69,17 @@ namespace taller1.src.Controllers.ProductControllers
         // [Authorize (Roles = "Admin")] 
         public async Task<IActionResult> Post([FromForm] CreateProductRequestDto request)
         {
-            Console.WriteLine($"Product Model: asd");
-            if(request.Image == null || request.Image.Length == 0)
+            if(!ModelState.IsValid)
             {
-                return BadRequest("Image is required");
+                return BadRequest(ModelState);
             }
-
-            if(request.Image.ContentType  != "image/jpg" && request.Image.ContentType != "image/png")
+            
+            string? imageUrl = await UploadImage(request.Image);
+            if (imageUrl == null)
             {
-                return BadRequest("Image must be a jpg or png");
+                return BadRequest("Image must be a jpg or png and less than 10MB");
             }
-
-            if(request.Image.Length > 10 * 1024 * 1024)
-            {
-                return BadRequest("Image must be less than 10MB");
-            }
-
-            var uploadParams = new ImageUploadParams
-            {
-                File = new FileDescription(request.Image.FileName, request.Image.OpenReadStream()),
-                Folder = "products_image"
-            };
-
-            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-
-            if(uploadResult.Error != null)
-            {
-                return BadRequest(uploadResult.Error.Message);
-            }
-
-            var productModel = request.ToProduct(uploadResult.SecureUrl.AbsoluteUri);
+            var productModel = request.ToProduct(imageUrl);
 
             bool exists = await _productRepository.ProductExists(productModel.Name, productModel.ProductTypeID);
             if (exists)
@@ -109,7 +90,73 @@ namespace taller1.src.Controllers.ProductControllers
             await _productRepository.CreateProduct(productModel);
             return CreatedAtAction(nameof(GetById), new { id = productModel.ID }, productModel.ToGetProductDto());
         }
-
         
+        [HttpPut]
+        [Route("{id:int}")]
+        [Consumes("multipart/form-data")]
+        // [Authorize (Roles = "Admin")] 
+        public async Task<IActionResult> Put([FromRoute] int id, [FromForm] UpdateProductRequestDto request)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            bool exists = await _productRepository.ProductExists(request.Name, request.ProductTypeID);
+            if (exists)
+            {
+                return BadRequest("A product with the same name and type already exists.");
+            }
+            string? imageUrl = null;
+            if (request.Image != null)
+            {
+                imageUrl = await UploadImage(request.Image);
+                
+                if (imageUrl == null)
+                {
+                    return BadRequest("Image must be a jpg or png and less than 10MB");
+                }
+            }
+
+            var getProductDto = await _productRepository.UpdateProduct(id, request, imageUrl);
+
+            if (getProductDto == null)
+            {
+                return NotFound();
+            }
+            return Ok(getProductDto);
+        }
+        
+        private async Task<string?> UploadImage(IFormFile image)
+        {
+            if(image == null || image.Length == 0)
+            {
+                return null;
+            }
+
+            if(image.ContentType  != "image/jpg" && image.ContentType != "image/png")
+            {
+                return null;
+            }
+
+            if(image.Length > 10 * 1024 * 1024)
+            {
+                return null;
+            }
+
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(image.FileName, image.OpenReadStream()),
+                Folder = "products_image"
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+            if(uploadResult.Error != null)
+            {
+                return null;
+            } 
+
+            return uploadResult.SecureUrl.AbsoluteUri;
+        }
     }
 }

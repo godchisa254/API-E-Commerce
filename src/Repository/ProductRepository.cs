@@ -75,7 +75,7 @@ namespace taller1.src.Repository
             return productModel.ToGetProductDto();
         }
 
-        public async Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto)
+        public async Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto, string? imageUrl)
         {
             var productModel = await _context.Products.FirstOrDefaultAsync(x => x.ID == id);
             if (productModel == null)
@@ -87,7 +87,7 @@ namespace taller1.src.Repository
             productModel.Name = productDto.Name ?? productModel.Name;
             productModel.Price = productDto.Price ?? productModel.Price;
             productModel.Stock = productDto.Stock ?? productModel.Stock;
-            productModel.Image = productDto.Image ?? productModel.Image;
+            productModel.Image = imageUrl ?? productModel.Image;
             
             await _context.SaveChangesAsync();
             return productModel.ToGetProductDto();
@@ -105,7 +105,7 @@ namespace taller1.src.Repository
             await _context.SaveChangesAsync();
             return productModel.ToGetProductDto();
         }
-        public async Task<bool> ProductExists(string name, int productTypeId)
+        public async Task<bool> ProductExists(string? name, int? productTypeId)
         {
             return await _context.Products
                 .AnyAsync(p => p.Name == name && p.ProductTypeID == productTypeId);
