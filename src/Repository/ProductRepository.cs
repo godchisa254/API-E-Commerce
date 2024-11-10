@@ -30,6 +30,11 @@ namespace taller1.src.Repository
             {
                 products = products.Where(x => x.Name.Contains(query.Name));
             }
+            
+            if (query.ProductTypeID.HasValue)
+            {
+                products = products.Where(p => p.ProductTypeID == query.ProductTypeID.Value);
+            }
 
             if(!string.IsNullOrWhiteSpace(query.SortBy))
             {
@@ -40,7 +45,7 @@ namespace taller1.src.Repository
                 }
                 else
                 {
-                    throw new ArgumentException($"Invalid sort property: {query.SortBy}");
+                    throw new ArgumentException($"Invalid sort property: {query.SortBy}, use one of the following: ProductTypeID, Name, Price, Stock");
                 }
             }
 

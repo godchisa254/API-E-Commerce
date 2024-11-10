@@ -34,6 +34,15 @@ namespace taller1.src.Controllers.Product
                 return BadRequest(ModelState);
             }
 
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                var validSortProperties = new[] { "ProductTypeID", "Name", "Price", "Stock" };
+                if (!validSortProperties.Contains(query.SortBy))
+                {
+                    return BadRequest($"Invalid SortBy property: {query.SortBy}. Use one of the following: {string.Join(", ", validSortProperties)}");
+                }
+            }
+
             var products = await _productRepository.GetAll(query);
             return Ok(products);
         }

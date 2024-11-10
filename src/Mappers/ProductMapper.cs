@@ -14,7 +14,6 @@ namespace taller1.src.Mappers
         {
             return new GetProductDto
             {
-                ID = productModel.ID,
                 ProductTypeID = productModel.ProductTypeID,
                 Name = productModel.Name,
                 Price = productModel.Price,
