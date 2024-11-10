@@ -12,7 +12,7 @@ using taller1.src.Interface;
 using taller1.src.Mappers;
 using taller1.src.Models;
 
-namespace taller1.src.Controllers.Product
+namespace taller1.src.Controllers.ProductControllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -45,6 +45,7 @@ namespace taller1.src.Controllers.Product
 
             var products = await _productRepository.GetAll(query);
             return Ok(products);
+            //TODO: implementar para agregar al carrito de compra
         }
 
         [HttpGet("{id:int}")]
@@ -99,7 +100,12 @@ namespace taller1.src.Controllers.Product
 
             var productModel = request.ToProduct(uploadResult.SecureUrl.AbsoluteUri);
 
-            
+            bool exists = await _productRepository.ProductExists(productModel.Name, productModel.ProductTypeID);
+            if (exists)
+            {
+                return BadRequest("A product with the same name and type already exists.");
+            }
+
             await _productRepository.CreateProduct(productModel);
             return CreatedAtAction(nameof(GetById), new { id = productModel.ID }, productModel.ToGetProductDto());
         }

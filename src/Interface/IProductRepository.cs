@@ -15,5 +15,6 @@ namespace taller1.src.Interface
         Task<GetProductDto> CreateProduct(Product productModel);
         Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto);
         Task<GetProductDto?> DeleteProduct(int id);
+        Task<bool> ProductExists(string name, int productTypeId);
     }
 }
