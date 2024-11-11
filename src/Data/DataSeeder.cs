@@ -4,11 +4,72 @@ using System.Linq;
 using System.Threading.Tasks;
 using taller1.src.Models;
 using Bogus;
+using Microsoft.AspNetCore.Mvc;
+using taller1.src.Dtos;
+using taller1.src.Dtos.AuthDtos;
+using taller1.src.Interface;
+
 
 namespace taller1.src.Data.Migrations
 {
+    
     public class DataSeeder
     {
+
+        private readonly ISeederRepository _seederRepository;
+
+        private readonly ITokenService _tokenService;
+
+        public DataSeeder(ISeederRepository seederRepository, ITokenService tokenService)
+        {
+            _seederRepository = seederRepository;
+            _tokenService = tokenService;
+        }
+
+
+        public async Task createAdmin()
+        {
+
+            //agregar admin
+            var admin = new AppUser
+            {
+                UserName = "admin@idwm.cl",  
+                Email = "admin@idwm.cl",
+                Rut = "20416699-4",
+                Name = "Ignacio Mancilla",  
+                Birthdate =  new DateOnly(2000, 10, 25),
+                Gender = 1
+            };
+
+            string adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")!;
+
+            //Crear Admin
+            var createUser = await _seederRepository.CreateAdminAsync(admin, adminPassword);
+
+            //Asignarle rol admin
+
+            if(createUser.Succeeded)
+            {
+                var role = await _seederRepository.AddRole(admin, "Admin");
+
+                if(role.Succeeded)
+                {
+                    
+                    new NewUserDto
+                    {
+                        Rut = admin.Rut,
+                        Name = admin.Name,
+                        Email = admin.Email,
+                        Token = _tokenService.CreateToken(admin)
+                    };
+                    
+                }
+            }
+
+        }
+        
+
+
         /**
         public static void Initialize(IServiceProvider serviceProvider)
         {

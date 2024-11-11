@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using taller1.src.Data;
+using taller1.src.Data.Migrations;
 using taller1.src.Interface;
 using taller1.src.Models;
 using taller1.src.Repository;
@@ -91,8 +92,11 @@ builder.Services.AddDbContext<ApplicationDBContext>(opt => opt.UseSqlite(connect
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ISeederRepository, SeederRepository>();
+builder.Services.AddScoped<DataSeeder>();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -103,9 +107,16 @@ if (app.Environment.IsDevelopment())
 
 using(var scope = app.Services.CreateScope())
 {
+    
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDBContext>();
     await context.Database.MigrateAsync();
+
+    
+    //Seeder
+    var dataSeeder = services.GetRequiredService<DataSeeder>();
+    await dataSeeder.createAdmin();
+
 }
 
 //app.UseHttpsRedirection();
