@@ -23,7 +23,7 @@ namespace taller1.src.Models
 
         [Required]
         [Column(TypeName = "decimal(9, 2)")]
-        public decimal Price { get; set; }
+        public float Price { get; set; }
 
         [Required]
         public int Stock { get; set; }

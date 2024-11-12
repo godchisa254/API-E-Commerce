@@ -39,7 +39,7 @@ namespace taller1.src.Models
 
         [Required]
         [Column(TypeName = "decimal(9, 2)")]
-        public decimal Total { get; set; }
+        public float Total { get; set; }
 
         public AppUser User { get; set; } = null!;
         public List<ReceiptItemDetail> ReceiptItemDetails { get; set; } = [];

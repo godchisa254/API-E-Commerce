@@ -31,14 +31,14 @@ namespace taller1.src.Models
 
         [Required]
         [Column(TypeName = "decimal(9, 2)")]
-        public decimal UnitPrice { get; set; }
+        public float UnitPrice { get; set; }
 
         [Required]
         public int Quantity { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(9, 2)")]
-        public decimal TotalPrice { get; set; }
+        public float TotalPrice { get; set; }
         
         public Receipt Receipt { get; set; } = null!;
         public Product Product { get; set; } = null!;
