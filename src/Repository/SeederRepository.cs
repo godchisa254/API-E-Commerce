@@ -29,5 +29,12 @@ namespace taller1.src.Repository
         {
             return await _userManager.CreateAsync(admin, password);
         }
+
+        public async Task<AppUser?> GetAdminByRol()
+        {
+            var admin = await _userManager.GetUsersInRoleAsync("Admin");
+
+            return admin.FirstOrDefault();
+        }
     }
 }

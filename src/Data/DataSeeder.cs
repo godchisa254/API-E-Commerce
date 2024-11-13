@@ -30,6 +30,11 @@ namespace taller1.src.Data.Migrations
         public async Task createAdmin()
         {
 
+            if(await _seederRepository.GetAdminByRol() != null)
+            {
+                return;
+            }
+
             //agregar admin
             var admin = new AppUser
             {

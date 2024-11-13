@@ -13,5 +13,6 @@ namespace taller1.src.Interface
 
         Task<IdentityResult> AddRole(AppUser admin, string role);
 
+        Task<AppUser?> GetAdminByRol();
     }
 }
