@@ -35,15 +35,21 @@ namespace taller1.src.Data.Migrations
                 return;
             }
 
+            string adminName = Environment.GetEnvironmentVariable("ADMIN_NAME")!;
+            string adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL")!;
+            string adminRut = Environment.GetEnvironmentVariable("ADMIN_RUT")!;
+            string adminBirthdate = Environment.GetEnvironmentVariable("ADMIN_BIRTHDATE")!;
+            string adminGender = Environment.GetEnvironmentVariable("ADMIN_GENDER")!;
+
             //agregar admin
             var admin = new AppUser
             {
-                UserName = "admin@idwm.cl",  
-                Email = "admin@idwm.cl",
-                Rut = "20416699-4",
-                Name = "Ignacio Mancilla",  
-                Birthdate =  new DateOnly(2000, 10, 25),
-                Gender = 1
+                UserName = adminEmail,  
+                Email = adminEmail,
+                Rut = adminRut,
+                Name = adminName,  
+                Birthdate =  DateOnly.Parse(adminBirthdate),
+                Gender = int.Parse(adminGender)
             };
 
             string adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")!;
