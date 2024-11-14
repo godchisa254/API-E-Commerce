@@ -4,13 +4,87 @@ using System.Linq;
 using System.Threading.Tasks;
 using taller1.src.Models;
 using Bogus;
+using Microsoft.AspNetCore.Mvc;
+using taller1.src.Dtos;
+using taller1.src.Dtos.AuthDtos;
+using taller1.src.Interface;
+
 
 namespace taller1.src.Data
 {
+    
     public class DataSeeder
     {
+
+        private readonly ISeederRepository _seederRepository;
+
+        private readonly ITokenService _tokenService;
+
+        public DataSeeder(ISeederRepository seederRepository, ITokenService tokenService)
+        {
+            _seederRepository = seederRepository;
+            _tokenService = tokenService;
+        }
+
+
+        public async Task createAdmin()
+        {
+
+            if(await _seederRepository.GetAdminByRol() != null)
+            {
+                return;
+            }
+
+            string adminName = Environment.GetEnvironmentVariable("ADMIN_NAME")!;
+            string adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL")!;
+            string adminRut = Environment.GetEnvironmentVariable("ADMIN_RUT")!;
+            string adminBirthdate = Environment.GetEnvironmentVariable("ADMIN_BIRTHDATE")!;
+            string adminGender = Environment.GetEnvironmentVariable("ADMIN_GENDER")!;
+
+            //agregar admin
+            var admin = new AppUser
+            {
+                UserName = adminEmail,  
+                Email = adminEmail,
+                Rut = adminRut,
+                Name = adminName,  
+                Birthdate =  DateOnly.Parse(adminBirthdate),
+                Gender = int.Parse(adminGender)
+            };
+
+            string adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")!;
+
+            //Crear Admin
+            var createUser = await _seederRepository.CreateAdminAsync(admin, adminPassword);
+
+            //Asignarle rol admin
+
+            if(createUser.Succeeded)
+            {
+                var role = await _seederRepository.AddRole(admin, "Admin");
+
+                if(role.Succeeded)
+                {
+                    
+                    new NewUserDto
+                    {
+                        Rut = admin.Rut,
+                        Name = admin.Name,
+                        Email = admin.Email,
+                        Token = _tokenService.CreateToken(admin)
+                    };
+                    
+                }
+            }
+
+        }
         
+
+
+        /**
+       
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
+
         {
             using (var scope = serviceProvider.CreateScope())
             {
