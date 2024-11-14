@@ -1,4 +1,5 @@
 using System.Text;
+using CloudinaryDotNet;
 using DotNetEnv;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using taller1.src.Data;
 using taller1.src.Data.Migrations;
+using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Models;
 using taller1.src.Repository;
@@ -15,8 +17,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/
+var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+    var cloudinaryAccount = new Account(
+        cloudinarySettings!.CloudName,
+        cloudinarySettings.ApiKey,
+        cloudinarySettings.ApiSecret
+    );
+    var cloudinary = new Cloudinary(cloudinaryAccount);
+    builder.Services.AddSingleton(cloudinary);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -94,6 +103,8 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISeederRepository, SeederRepository>();
 builder.Services.AddScoped<DataSeeder>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 
 var app = builder.Build();
 
@@ -103,6 +114,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 using(var scope = app.Services.CreateScope())
@@ -110,12 +122,15 @@ using(var scope = app.Services.CreateScope())
     
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDBContext>();
-    await context.Database.MigrateAsync();
 
+    await context.Database.MigrateAsync();
     
     //Seeder
     var dataSeeder = services.GetRequiredService<DataSeeder>();
     await dataSeeder.createAdmin();
+
+    await context.Database.MigrateAsync();   
+    await DataSeeder.InitializeAsync(services);
 
 }
 
