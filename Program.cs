@@ -130,7 +130,7 @@ using(var scope = app.Services.CreateScope())
     await dataSeeder.createAdmin();
 
     await context.Database.MigrateAsync();   
-    await DataSeeder.InitializeAsync(services);
+   await DataSeeder.InitializeAsync(services);
 
 }
 

@@ -81,7 +81,6 @@ namespace taller1.src.Data
         
 
 
-        /**
        
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
 
@@ -180,30 +179,32 @@ namespace taller1.src.Data
             return verification == 11 ? 0 : verification;
         }
 
-    public static async Task SeedProductTypes(ApplicationDBContext context)
-    {
-        
-        if(!context.ProductTypes.Any())
+        public static async Task SeedProductTypes(ApplicationDBContext context)
         {
-            var types = new List<ProductType>
+        
+            if(!context.ProductTypes.Any())
             {
-                new ProductType { Type = "Poleras" },
-                new ProductType { Type = "Gorros" },
-                new ProductType { Type = "Juguetería" },
-                new ProductType { Type = "Alimentación" },
-                new ProductType { Type = "Libros" }
-            };
-
-            foreach (var type in types)
-            {
-                if (!context.ProductTypes.Any(c => c.Type == type.Type))
+                var types = new List<ProductType>
                 {
-                    context.ProductTypes.Add(type);
-                }
-            }
+                    new ProductType { Type = "Poleras" },
+                    new ProductType { Type = "Gorros" },
+                    new ProductType { Type = "Juguetería" },
+                    new ProductType { Type = "Alimentación" },
+                    new ProductType { Type = "Libros" }
+                };
 
-            await context.SaveChangesAsync();
+                foreach (var type in types)
+                {
+                    if (!context.ProductTypes.Any(c => c.Type == type.Type))
+                    {
+                        context.ProductTypes.Add(type);
+                    }
+                }
+
+                await context.SaveChangesAsync();
+            }
         }
-    }
+
+
     }
 }
