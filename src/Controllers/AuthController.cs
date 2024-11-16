@@ -84,7 +84,7 @@ namespace taller1.src.Controllers
                                 Rut = appUser.Rut,
                                 Name = appUser.Name,
                                 Email = appUser.Email,
-                                Token = _tokenService.CreateToken(appUser)
+                               // Token = _tokenService.CreateTokenUser(appUser)
                             }
                         );
                     }
@@ -145,7 +145,7 @@ namespace taller1.src.Controllers
                         Rut = appUser.Rut!,
                         Name = appUser.Name!,
                         Email = appUser.Email!,
-                        Token = _tokenService.CreateToken(appUser)
+                       // Token = _tokenService.CreateTokenUser(appUser)
                     }
                 );
 

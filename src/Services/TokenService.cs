@@ -32,8 +32,8 @@ namespace taller1.src.Services
 
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
         }
-
-        public string CreateToken(AppUser user)
+        /**
+        public string CreateTokenUser(AppUser user)
         {
             var claims = new List<Claim>
             {
@@ -41,6 +41,34 @@ namespace taller1.src.Services
                 new Claim(JwtRegisteredClaimNames.GivenName, user.Name!),
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id!),
                 new Claim(ClaimTypes.Role, "User")
+            };
+
+            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddHours(24),
+                SigningCredentials = creds,
+                Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+                Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+
+        }
+        **/
+        public string CreateTokenAdmin(AppUser admin)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Email, admin.Email!),
+                new Claim(JwtRegisteredClaimNames.GivenName, admin.Name!),
+                new Claim(JwtRegisteredClaimNames.NameId, admin.Id!),
+                new Claim(ClaimTypes.Role, "Admin")
             };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
