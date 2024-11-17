@@ -28,7 +28,8 @@ namespace taller1.src.Repository
 
             if(!string.IsNullOrWhiteSpace(query.Name))
             {
-                products = products.Where(x => x.Name.Contains(query.Name));
+                var normalizedQueryName = query.Name.Trim().ToLower();
+                products = products.Where(x => x.Name.ToLower().Contains(normalizedQueryName));
             }
             
             if (query.ProductTypeID.HasValue)
