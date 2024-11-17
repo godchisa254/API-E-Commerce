@@ -84,7 +84,7 @@ namespace taller1.src.Controllers
                                 Rut = appUser.Rut,
                                 Name = appUser.Name,
                                 Email = appUser.Email,
-                               // Token = _tokenService.CreateTokenUser(appUser)
+                               Token = _tokenService.CreateTokenUser(appUser)
                             }
                         );
                     }
@@ -139,13 +139,26 @@ namespace taller1.src.Controllers
                     return Unauthorized("Correo o Contraseña Invalidos");
                 }
 
+                string? appRol = await _authRepository.GetRol(appUser);
+
+                string createToken;
+
+                if( appRol == "Admin")
+                {
+                    createToken = _tokenService.CreateTokenAdmin(appUser);
+                }
+                else
+                {
+                    createToken = _tokenService.CreateTokenUser(appUser);
+                }
+
                 return Ok(
                     new NewUserDto
                     {
                         Rut = appUser.Rut!,
                         Name = appUser.Name!,
                         Email = appUser.Email!,
-                       // Token = _tokenService.CreateTokenUser(appUser)
+                        Token = createToken
                     }
                 );
 

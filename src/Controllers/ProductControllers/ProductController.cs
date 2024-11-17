@@ -66,7 +66,7 @@ namespace taller1.src.Controllers.ProductControllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        [Authorize (Roles = "Admin")] 
+        [Authorize (Roles = "Admin", AuthenticationSchemes = "Bearer")] 
         public async Task<IActionResult> Post([FromForm] CreateProductRequestDto request)
         {
             if(!ModelState.IsValid)
@@ -128,7 +128,7 @@ namespace taller1.src.Controllers.ProductControllers
 
         [HttpDelete]
         [Route("{id:int}")]
-        [Authorize (Roles = "Admin")]
+        [Authorize (Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             if(!ModelState.IsValid)

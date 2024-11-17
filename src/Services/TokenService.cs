@@ -32,7 +32,7 @@ namespace taller1.src.Services
 
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
         }
-        /**
+
         public string CreateTokenUser(AppUser user)
         {
             var claims = new List<Claim>
@@ -60,7 +60,7 @@ namespace taller1.src.Services
             return tokenHandler.WriteToken(token);
 
         }
-        **/
+
         public string CreateTokenAdmin(AppUser admin)
         {
             var claims = new List<Claim>

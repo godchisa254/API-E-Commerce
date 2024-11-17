@@ -8,7 +8,7 @@ namespace taller1.src.Interface
 {
     public interface ITokenService
     {
-        //string CreateTokenUser(AppUser user);
+        string CreateTokenUser(AppUser user);
 
         string CreateTokenAdmin(AppUser admin);
     }
