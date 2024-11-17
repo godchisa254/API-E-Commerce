@@ -219,6 +219,27 @@ namespace taller1.src.Controllers
             }
         }
  
+        [HttpPost("checkout")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult Checkout()
+        {
+            string? userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized("User is not authenticated, log in to proceed.");
+            }
+
+            try
+            {
+                // TODO: implementar sistema de pago, considerar la autorización por tokens
+                return Ok("Redirecting...");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         private void SaveCartAnyUser(ShoppingCart cart, string? userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -234,7 +255,7 @@ namespace taller1.src.Controllers
                 SaveCartToCookies(userId, cart);
             }
         }
-
+        
         private string? GetUserId()
         {
             string? userId;
@@ -252,7 +273,7 @@ namespace taller1.src.Controllers
             }
             return userId;
         }
-        
+
         private async Task<ShoppingCart> GetCart(string? userId)
         {
             if (string.IsNullOrEmpty(userId))
