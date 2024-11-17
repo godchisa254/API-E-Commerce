@@ -10,11 +10,11 @@ namespace taller1.src.Interface
 {
     public interface IProductRepository
     {
-        Task<List<GetProductDto>> GetAll(QueryObject query);
-        Task<GetProductDto?> GetById(int id);
-        Task<GetProductDto> CreateProduct(Product productModel);
-        Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto, string? imageUrl);
-        Task<GetProductDto?> DeleteProduct(int id);
+        Task<List<Product>> GetAll(QueryObject query);
+        Task<Product?> GetById(int id);
+        Task<Product> CreateProduct(Product productModel);
+        Task<Product?> UpdateProduct(int id, UpdateProductRequestDto productDto, string? imageUrl);
+        Task<Product?> DeleteProduct(int id);
         Task<bool> ProductExists(string? name, int? productTypeId);
     }
 }

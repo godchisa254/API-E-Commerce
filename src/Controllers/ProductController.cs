@@ -12,7 +12,7 @@ using taller1.src.Interface;
 using taller1.src.Mappers;
 using taller1.src.Models;
 
-namespace taller1.src.Controllers.ProductControllers
+namespace taller1.src.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -44,8 +44,9 @@ namespace taller1.src.Controllers.ProductControllers
             }
 
             var products = await _productRepository.GetAll(query);
-            return Ok(products);
-            //TODO: implementar para agregar al carrito de compra
+            var productDtos = products.Select(x => x.ToGetProductDto()).ToList();
+
+            return Ok(productDtos);
         }
 
         [HttpGet("{id:int}")]
@@ -61,12 +62,13 @@ namespace taller1.src.Controllers.ProductControllers
             {
                 return NotFound();
             }
-            return Ok(product);
+            var productDto = product.ToGetProductDto();
+            return Ok(productDto);
         }
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        [Authorize (Roles = "Admin", AuthenticationSchemes = "Bearer")] 
+        [Authorize (Roles = "Admin")] 
         public async Task<IActionResult> Post([FromForm] CreateProductRequestDto request)
         {
             if(!ModelState.IsValid)
@@ -117,18 +119,18 @@ namespace taller1.src.Controllers.ProductControllers
                 }
             }
 
-            var getProductDto = await _productRepository.UpdateProduct(id, request, imageUrl);
+            var productModel = await _productRepository.UpdateProduct(id, request, imageUrl);
 
-            if (getProductDto == null)
+            if (productModel == null)
             {
                 return NotFound();
             }
-            return Ok(getProductDto);
+            return Ok(productModel.ToGetProductDto());
         }
 
         [HttpDelete]
         [Route("{id:int}")]
-        [Authorize (Roles = "Admin", AuthenticationSchemes = "Bearer")]
+        [Authorize (Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             if(!ModelState.IsValid)
@@ -141,7 +143,7 @@ namespace taller1.src.Controllers.ProductControllers
             {
                 return NotFound();
             }
-            return Ok(product);
+            return Ok(product.ToGetProductDto());
         }
         
         private async Task<string?> UploadImage(IFormFile image)

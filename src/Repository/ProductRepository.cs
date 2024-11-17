@@ -20,7 +20,7 @@ namespace taller1.src.Repository
             _context = context;
         }
 
-        public async Task<List<GetProductDto>> GetAll(QueryObject query)
+        public async Task<List<Product>> GetAll(QueryObject query)
         {
             var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
             var pageSize = query.PageSize > 0 ? query.PageSize : 10;
@@ -53,29 +53,27 @@ namespace taller1.src.Repository
 
             var productModels = await products.Skip(skipNumber).Take(pageSize).ToListAsync();
 
-            var productDtos = productModels.Select(x => x.ToGetProductDto()).ToList();
-
-            return productDtos;
+            return productModels;
         }
 
-        public async Task<GetProductDto?> GetById(int id)
+        public async Task<Product?> GetById(int id)
         {
             var productModel = await _context.Products.FindAsync(id);
             if (productModel == null)
             {
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
             }
-            return productModel.ToGetProductDto();
+            return productModel;
         }
 
-        public async Task<GetProductDto> CreateProduct(Product productModel)
+        public async Task<Product> CreateProduct(Product productModel)
         {
             await _context.Products.AddAsync(productModel);
             await _context.SaveChangesAsync();
-            return productModel.ToGetProductDto();
+            return productModel;
         }
 
-        public async Task<GetProductDto?> UpdateProduct(int id, UpdateProductRequestDto productDto, string? imageUrl)
+        public async Task<Product?> UpdateProduct(int id, UpdateProductRequestDto productDto, string? imageUrl)
         {
             var productModel = await _context.Products.FirstOrDefaultAsync(x => x.ID == id);
             if (productModel == null)
@@ -90,10 +88,10 @@ namespace taller1.src.Repository
             productModel.Image = imageUrl ?? productModel.Image;
             
             await _context.SaveChangesAsync();
-            return productModel.ToGetProductDto();
+            return productModel;
         }
 
-        public async Task<GetProductDto?> DeleteProduct(int id)
+        public async Task<Product?> DeleteProduct(int id)
         {
             var productModel = await _context.Products.FirstOrDefaultAsync(x => x.ID == id);
             if (productModel == null)
@@ -103,7 +101,7 @@ namespace taller1.src.Repository
 
             _context.Products.Remove(productModel);
             await _context.SaveChangesAsync();
-            return productModel.ToGetProductDto();
+            return productModel;
         }
         public async Task<bool> ProductExists(string? name, int? productTypeId)
         {
