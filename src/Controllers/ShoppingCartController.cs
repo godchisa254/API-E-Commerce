@@ -122,6 +122,57 @@ namespace taller1.src.Controllers
             }
         }
         
+        [HttpPost("deduct_product")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RemoveFromCart(int productId, int quantity)
+        {
+            string? userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized("User is not authenticated.");
+            }
+            
+            try
+            { 
+                var cart = await GetCart(userId);
+
+                if (cart == null || !cart.ShoppingCartItems.Any())
+                { 
+                    return NotFound("Shopping cart is empty.");
+                }
+
+                var existingItem = cart.ShoppingCartItems
+                    .FirstOrDefault(item => item.ProductID == productId);
+
+                if (existingItem == null)
+                {
+                    return NotFound("Product not found in the cart.");
+                }
+ 
+                existingItem.Quantity -= quantity;
+                if (existingItem.Quantity <= 0)
+                {
+                    cart.ShoppingCartItems.Remove(existingItem);
+                } 
+
+                SaveCartAnyUser(cart, userId);
+
+                var cartItems = cart.ShoppingCartItems.Select(item => new
+                {
+                    item.Product.Name,
+                    item.Product.Price,
+                    item.Quantity,
+                    TotalPrice = item.Product.Price * item.Quantity
+                });
+
+                return Ok(cartItems);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        } 
+
         private void SaveCartAnyUser(ShoppingCart cart, string? userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -137,7 +188,7 @@ namespace taller1.src.Controllers
                 SaveCartToCookies(userId, cart);
             }
         }
-        
+
         private string? GetUserId()
         {
             string? userId;
@@ -155,7 +206,7 @@ namespace taller1.src.Controllers
             }
             return userId;
         }
-        
+
         private async Task<ShoppingCart> GetCart(string? userId)
         {
             if (string.IsNullOrEmpty(userId))
