@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using taller1.src.Data;
@@ -43,5 +44,13 @@ namespace taller1.src.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
+
+         public async Task<string?> GetRol(AppUser user)
+        {
+            var rol = await _userManager.GetRolesAsync(user!);
+
+            return rol.FirstOrDefault();
+        }
+        
     }
 }

@@ -17,12 +17,12 @@ namespace taller1.src.Data
         }
 
 
-        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
-        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
-        public DbSet<Receipt> Receipts { get; set; }
-        public DbSet<ReceiptItemDetail> ReceiptItemDetails { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<ProductType> ProductTypes { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; } = null!;
+        public DbSet<Receipt> Receipts { get; set; } = null!;
+        public DbSet<ReceiptItemDetail> ReceiptItemDetails { get; set; } = null!;
+        public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<ProductType> ProductTypes { get; set; } = null!;
 
         
           protected override void OnModelCreating(ModelBuilder modelBuilder)

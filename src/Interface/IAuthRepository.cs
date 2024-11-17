@@ -16,5 +16,7 @@ namespace taller1.src.Interface
         Task<IdentityResult> AddRole(AppUser user, string role);
 
         Task<AppUser?> GetUserByEmail(string email);
+
+        Task<string?> GetRol(AppUser user);
     }
 }
