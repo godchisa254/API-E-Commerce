@@ -10,7 +10,6 @@ namespace taller1.src.Interface
     {
         Task<ShoppingCart> GetCartByUserId(string userId);
         Task SaveCart(ShoppingCart cart, string userId);
-        Task<Product> GetProductById(int productId);
     }
 
 }
