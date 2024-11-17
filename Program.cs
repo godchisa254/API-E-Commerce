@@ -1,6 +1,7 @@
 using System.Text;
 using CloudinaryDotNet;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -50,7 +51,7 @@ builder.Services.AddAuthentication(
         opt.DefaultForbidScheme = 
         opt.DefaultScheme = 
         opt.DefaultSignInScheme = 
-        opt.DefaultSignOutScheme = IdentityConstants.ApplicationScheme;
+        opt.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
     }
 ).AddJwtBearer(
     opt =>

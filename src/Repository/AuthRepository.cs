@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using taller1.src.Data;
+using taller1.src.Dtos.AuthDtos;
 using taller1.src.Interface;
 using taller1.src.Models;
 
@@ -51,6 +53,27 @@ namespace taller1.src.Repository
 
             return rol.FirstOrDefault();
         }
+
+        public async Task<IActionResult> UpdatePassword( string id, ChangePasswordDto request)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return new NotFoundResult();
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return new OkResult();
+            }
+
+            return new BadRequestObjectResult(result.Errors);
+        }
+
+
         
     }
 }

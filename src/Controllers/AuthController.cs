@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -169,5 +170,40 @@ namespace taller1.src.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
+        {
+            
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+
+
+            var userId = userIdClaim.Value;
+    
+
+            if(newPasswordDto.Password == newPasswordDto.NewPassword)
+            {
+                return BadRequest("The new password cannot be the same as the previous one");
+            }
+
+            if(newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
+            {
+                return BadRequest("The new password and the confirmation password must be the same");
+            }
+
+            var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
+
+            return Ok("Password updated successfully");
+
+        }
+
+
+
     }
 }
