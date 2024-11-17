@@ -44,7 +44,9 @@ namespace taller1.src.Controllers.ProductControllers
             }
 
             var products = await _productRepository.GetAll(query);
-            return Ok(products);
+            var productDtos = products.Select(x => x.ToGetProductDto()).ToList();
+
+            return Ok(productDtos);
             //TODO: implementar para agregar al carrito de compra
         }
 
@@ -61,7 +63,8 @@ namespace taller1.src.Controllers.ProductControllers
             {
                 return NotFound();
             }
-            return Ok(product);
+            var productDto = product.ToGetProductDto();
+            return Ok(productDto);
         }
 
         [HttpPost]
@@ -117,13 +120,13 @@ namespace taller1.src.Controllers.ProductControllers
                 }
             }
 
-            var getProductDto = await _productRepository.UpdateProduct(id, request, imageUrl);
+            var productModel = await _productRepository.UpdateProduct(id, request, imageUrl);
 
-            if (getProductDto == null)
+            if (productModel == null)
             {
                 return NotFound();
             }
-            return Ok(getProductDto);
+            return Ok(productModel.ToGetProductDto());
         }
 
         [HttpDelete]
@@ -141,7 +144,7 @@ namespace taller1.src.Controllers.ProductControllers
             {
                 return NotFound();
             }
-            return Ok(product);
+            return Ok(product.ToGetProductDto());
         }
         
         private async Task<string?> UploadImage(IFormFile image)
