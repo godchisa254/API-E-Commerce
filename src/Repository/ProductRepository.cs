@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using taller1.src.Data;
 using taller1.src.Dtos.ProductDtos;
 using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Models;
-using taller1.src.Mappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace taller1.src.Repository
@@ -28,7 +23,8 @@ namespace taller1.src.Repository
 
             if(!string.IsNullOrWhiteSpace(query.Name))
             {
-                products = products.Where(x => x.Name.Contains(query.Name));
+                var normalizedQueryName = query.Name.Trim().ToLower();
+                products = products.Where(x => x.Name.ToLower().Contains(normalizedQueryName));
             }
             
             if (query.ProductTypeID.HasValue)

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using taller1.src.Helpers;
 using taller1.src.Dtos.ProductDtos;
 using taller1.src.Models;

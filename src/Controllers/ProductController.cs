@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
@@ -9,8 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using taller1.src.Dtos.ProductDtos;
 using taller1.src.Helpers;
 using taller1.src.Interface;
-using taller1.src.Mappers;
-using taller1.src.Models;
+using taller1.src.Mappers; 
 
 namespace taller1.src.Controllers
 {
