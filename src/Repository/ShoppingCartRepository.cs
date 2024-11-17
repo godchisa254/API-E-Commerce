@@ -14,7 +14,19 @@ namespace taller1.src.Repository
         {
             _context = context;
         }
+        public async Task<ShoppingCart> GetCartByUserId(string userId)
+        {
+            var cart = await _context.ShoppingCarts
+                .Include(cart => cart.ShoppingCartItems)
+                .ThenInclude(item => item.Product)
+                .FirstOrDefaultAsync(cart => cart.UserID == userId);
+ 
+            if (cart == null)
+            {
+                cart = new ShoppingCart { UserID = userId, ShoppingCartItems = new List<ShoppingCartItem>() };
+            }
+            return cart;
+        }
 
     }
-
 }

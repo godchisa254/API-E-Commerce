@@ -8,6 +8,7 @@ namespace taller1.src.Interface
 {
     public interface IShoppingCartRepository
     {
+        Task<ShoppingCart> GetCartByUserId(string userId);
     }
 
 }
