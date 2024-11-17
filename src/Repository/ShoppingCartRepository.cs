@@ -44,15 +44,6 @@ namespace taller1.src.Repository
 
             await _context.SaveChangesAsync();
         }
-        public async Task<Product> GetProductById(int productId)
-        {
-            var productModel = await _context.Products.FindAsync(productId);
-            if (productModel == null)
-            {
-                throw new KeyNotFoundException($"Product with ID {productId} not found.");
-            }
-            return productModel;
-        }
 
     }
 }

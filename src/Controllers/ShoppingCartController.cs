@@ -19,9 +19,11 @@ namespace taller1.src.Controllers
         private const string CartCookieKey = "TicketsList"; 
         private const string UserCookieKey = "UserGUID";
         private readonly IShoppingCartRepository _shoppingCartRepository;
-        public ShoppingCartController(IShoppingCartRepository shoppingCartRepository)
+        private readonly IProductRepository _productRepository;
+        public ShoppingCartController(IShoppingCartRepository shoppingCartRepository, IProductRepository productRepository)
         {
             _shoppingCartRepository = shoppingCartRepository;
+            _productRepository = productRepository;
         }
 
         [HttpGet]
@@ -89,7 +91,7 @@ namespace taller1.src.Controllers
                 }
                 else
                 { 
-                    var product = await _shoppingCartRepository.GetProductById(productId); //TODO: arreglar el repositorio de productos para que devuelva un productModel y no DTO
+                    var product = await _productRepository.GetById(productId); 
                     if (product == null)
                     {
                         return NotFound("Product not found.");
