@@ -12,7 +12,7 @@ using taller1.src.Interface;
 using taller1.src.Mappers;
 using taller1.src.Models;
 
-namespace taller1.src.Controllers.ProductControllers
+namespace taller1.src.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -47,7 +47,6 @@ namespace taller1.src.Controllers.ProductControllers
             var productDtos = products.Select(x => x.ToGetProductDto()).ToList();
 
             return Ok(productDtos);
-            //TODO: implementar para agregar al carrito de compra
         }
 
         [HttpGet("{id:int}")]
