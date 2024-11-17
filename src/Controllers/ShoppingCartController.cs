@@ -58,6 +58,86 @@ namespace taller1.src.Controllers
             }
         }
         
+        [HttpPost("add_product")]
+        [AllowAnonymous]
+        public async Task<IActionResult> AddToCart(int productId, int quantity)
+        {
+            string? userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized("User is not authenticated.");
+            }
+            try
+            { 
+                var cart = await GetCart(userId);
+
+                if (cart == null || !cart.ShoppingCartItems.Any())
+                {
+                    return NotFound("Shopping cart not found or is empty.");
+                }
+
+                var existingItem = cart.ShoppingCartItems
+                    .FirstOrDefault(item => item.ProductID == productId);
+
+                if (existingItem != null)
+                {
+                    if (existingItem.Product.Stock < existingItem.Quantity + quantity)
+                    {
+                        return BadRequest("Not enough stock available.");
+                    }
+                    existingItem.Quantity += quantity;
+                }
+                else
+                { 
+                    var product = await _shoppingCartRepository.GetProductById(productId); //TODO: arreglar el repositorio de productos para que devuelva un productModel y no DTO
+                    if (product == null)
+                    {
+                        return NotFound("Product not found.");
+                    }
+
+                    cart.ShoppingCartItems.Add(new ShoppingCartItem
+                    {
+                        ProductID = productId,
+                        Quantity = quantity,
+                        Product = product
+                    });
+                    Console.WriteLine("Product added to cart");
+                } 
+
+                SaveCartAnyUser(cart, userId);
+
+                var cartItems = cart.ShoppingCartItems.Select(item => new
+                {
+                    item.Product.Name,
+                    item.Product.Price,
+                    item.Quantity,
+                    TotalPrice = item.Product.Price * item.Quantity
+                });
+
+                return Ok(cartItems);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
+        
+        private void SaveCartAnyUser(ShoppingCart cart, string? userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException(nameof(userId), "User ID cannot be null or empty.");
+            }
+            if (User.Identity?.IsAuthenticated ?? false)
+            {
+                _shoppingCartRepository.SaveCart(cart, userId);
+            }
+            else
+            {
+                SaveCartToCookies(userId, cart);
+            }
+        }
+        
         private string? GetUserId()
         {
             string? userId;

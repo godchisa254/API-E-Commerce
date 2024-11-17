@@ -27,6 +27,32 @@ namespace taller1.src.Repository
             }
             return cart;
         }
+        public async Task SaveCart(ShoppingCart cart, string userId)
+        {
+            var existingCart = await _context.ShoppingCarts
+                .Include(c => c.ShoppingCartItems)
+                .FirstOrDefaultAsync(c => c.UserID == userId);
+
+            if (existingCart == null)
+            {
+                _context.ShoppingCarts.Add(cart);
+            }
+            else
+            {
+                existingCart.ShoppingCartItems = cart.ShoppingCartItems;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        public async Task<Product> GetProductById(int productId)
+        {
+            var productModel = await _context.Products.FindAsync(productId);
+            if (productModel == null)
+            {
+                throw new KeyNotFoundException($"Product with ID {productId} not found.");
+            }
+            return productModel;
+        }
 
     }
 }
