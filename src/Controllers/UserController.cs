@@ -40,5 +40,18 @@ namespace taller1.src.Controllers
             return Ok(usersDtos);
         }
 
+        [HttpPut("{rut}")]
+        public async Task<IActionResult> EnableDisableUser(string rut)
+        {
+            var user = await _authRepository.GetUserByRut(rut);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.enabledUser = !user.enabledUser;
+            await _authRepository.EnableDisableUser(user);
+            return Ok(user.ToGetUserDto());
+        }
     }
 }
