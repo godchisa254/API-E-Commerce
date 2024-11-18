@@ -139,6 +139,11 @@ namespace taller1.src.Controllers
                 {
                     return Unauthorized("Correo o Contraseña Invalidos");
                 }
+                
+                if(!appUser.enabledUser)
+                {
+                    return Unauthorized("Usuario deshabilitado, inicio de sesión no permitido.");
+                }
 
                 string? appRol = await _authRepository.GetRol(appUser);
 

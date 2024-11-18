@@ -32,7 +32,7 @@ namespace taller1.src.Models
         [StringLength(20)]
         [Column(TypeName = "varchar")]
         public string Password { get; set; } = string.Empty;
-
+        public bool enabledUser { get; set; } = true;
         public List<Receipt> Receipts { get; set; } = [];
         public virtual ShoppingCart? ShoppingCart { get; set; }
     }
