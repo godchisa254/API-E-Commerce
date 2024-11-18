@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,23 +51,24 @@ namespace taller1.src.Repository
             return rol.FirstOrDefault();
         }
 
-        public async Task<IActionResult> UpdatePassword( string id, ChangePasswordDto request)
+        public async Task<IdentityResult> UpdatePassword( string id, ChangePasswordDto request)
         {
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
             {
-                return new NotFoundResult();
+                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
             }
 
             var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
 
             if (result.Succeeded)
             {
-                return new OkResult();
+                await _userManager.UpdateSecurityStampAsync(user);
+                return IdentityResult.Success;
             }
 
-            return new BadRequestObjectResult(result.Errors);
+            return IdentityResult.Failed(result.Errors.ToArray());
         }
 
         public async Task<List<AppUser>> GetAllUsers(QueryUser query)
@@ -116,5 +118,12 @@ namespace taller1.src.Repository
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<AppUser?> GetUserByid(string id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+
     }
 }

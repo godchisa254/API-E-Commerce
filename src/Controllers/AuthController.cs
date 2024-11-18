@@ -190,22 +190,47 @@ namespace taller1.src.Controllers
 
 
             var userId = userIdClaim.Value;
+
+            AppUser? user = await _authRepository.GetUserByid(userId);
     
+            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, newPasswordDto.Password, false);
+
+            if(!checkPassword.Succeeded)
+            {
+                return Unauthorized("Contraseña Invalida");
+            }
 
             if(newPasswordDto.Password == newPasswordDto.NewPassword)
             {
-                return BadRequest("The new password cannot be the same as the previous one");
+                return BadRequest("La nueva contraseña no puede ser igual a la anterior");
             }
 
             if(newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
             {
-                return BadRequest("The new password and the confirmation password must be the same");
+                return BadRequest("La nueva contraseña debe de coincidir con su confirmacion");
             }
 
             var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
 
-            return Ok("Password updated successfully");
+            if(result.Succeeded)
+            {
 
+                var newToken = _tokenService.CreateTokenUser(user!);
+
+                
+                var Response = new {
+
+                    Message = "Password updated successfully",
+                    token = newToken
+                };
+                
+                return Ok(Response);
+
+            }
+
+
+            return BadRequest("Password update failed.");
+            
         }
 
 
