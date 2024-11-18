@@ -40,7 +40,7 @@ namespace taller1.src.Controllers
             { 
                 var cart = await GetCart(userId);
 
-                if (cart == null || !cart.ShoppingCartItems.Any())
+                if (cart == null)
                 {
                     return NotFound("Shopping cart not found or is empty.");
                 }
