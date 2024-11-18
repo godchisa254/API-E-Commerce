@@ -19,7 +19,8 @@ namespace taller1.src.Interface
 
         Task<string?> GetRol(AppUser user);
 
-        Task<IdentityResult> UpdatePassword(string id, ChangePasswordDto productDto);
+        Task<IdentityResult> UpdatePassword(string id, ChangePasswordDto request);
+
         Task<List<AppUser>> GetAllUsers(QueryUser query);
 
         Task<AppUser?> GetUserByRut(string rut);
@@ -27,5 +28,7 @@ namespace taller1.src.Interface
         Task EnableDisableUser(AppUser user);
 
         Task<AppUser?> GetUserByid(string id);
+
+        Task<AppUser> EditProfile(string id, EditProfileUserDto request);
     }
 }
