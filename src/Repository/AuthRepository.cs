@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using taller1.src.Data;
 using taller1.src.Dtos.AuthDtos;
+using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Models;
 
@@ -47,7 +43,7 @@ namespace taller1.src.Repository
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-         public async Task<string?> GetRol(AppUser user)
+        public async Task<string?> GetRol(AppUser user)
         {
             var rol = await _userManager.GetRolesAsync(user!);
 
@@ -73,7 +69,52 @@ namespace taller1.src.Repository
             return new BadRequestObjectResult(result.Errors);
         }
 
+        public async Task<List<AppUser>> GetAllUsers(QueryUser query)
+        {
+            var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
+            var pageSize = query.PageSize > 0 ? query.PageSize : 10;
+            var users = _context.Users.AsQueryable();
 
-        
+            if(!string.IsNullOrWhiteSpace(query.Name))
+            {
+                var normalizedQueryName = query.Name.Trim().ToLower();
+                users = users.Where(u => u.Name.ToLower().Contains(normalizedQueryName));
+            }
+            
+            if (query.enabledUser.HasValue)
+            {
+                if (query.enabledUser.Value) { users = users.Where(u => u.enabledUser); }
+                else                         { users = users.Where(u => !u.enabledUser); }
+            }
+
+            if(!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                var propertyInfo = typeof(AppUser).GetProperty(query.SortBy);
+                if (propertyInfo != null)
+                {
+                    users = query.IsDescending ? users.OrderByDescending(x => EF.Property<object>(x, query.SortBy)) : users.OrderBy(x => EF.Property<object>(x, query.SortBy));
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid sort property: {query.SortBy}, Use one of the following: {string.Join(", ", propertyInfo)}");
+                }
+            }
+
+            var skipNumber = (pageNumber - 1) * pageSize;
+            var AppUserModels = await users.Skip(skipNumber).Take(pageSize).ToListAsync();
+
+            return AppUserModels;
+        }
+
+        public async Task<AppUser?> GetUserByRut(string rut)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
+        }
+
+        public async Task EnableDisableUser(AppUser user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }
