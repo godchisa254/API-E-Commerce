@@ -191,7 +191,12 @@ namespace taller1.src.Controllers
 
             var userId = userIdClaim.Value;
 
-            AppUser? user = await _authRepository.GetUserByid(userId);
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+            return NotFound("Usuario no encontrado");
+            }
     
             var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, newPasswordDto.Password, false);
 
@@ -242,12 +247,19 @@ namespace taller1.src.Controllers
                 return BadRequest(ModelState);
             }
 
+
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
 
 
             var userId = userIdClaim.Value;
 
-            AppUser? user = await _authRepository.GetUserByid(userId);
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+                return NotFound("Usuario no encontrado");
+            }
+
 
             var result = await _authRepository.EditProfile(userId, editProfileUserDto);
 
