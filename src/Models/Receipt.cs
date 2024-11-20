@@ -35,7 +35,7 @@ namespace taller1.src.Models
         public string Street { get; set; } = string.Empty;
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(9, 2)")]
