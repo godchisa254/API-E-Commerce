@@ -176,7 +176,7 @@ namespace taller1.src.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("actualizar-contrasena")]
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
         {
@@ -191,7 +191,12 @@ namespace taller1.src.Controllers
 
             var userId = userIdClaim.Value;
 
-            AppUser? user = await _authRepository.GetUserByid(userId);
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+            return NotFound("Usuario no encontrado");
+            }
     
             var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, newPasswordDto.Password, false);
 
@@ -220,7 +225,7 @@ namespace taller1.src.Controllers
                 
                 var Response = new {
 
-                    Message = "Password updated successfully",
+                    Message = "Contraseña actualizada correctamente",
                     token = newToken
                 };
                 
@@ -229,10 +234,61 @@ namespace taller1.src.Controllers
             }
 
 
-            return BadRequest("Password update failed.");
+            return BadRequest("Fallo al actualizar contraseña");
             
         }
 
+        [HttpPut("editar-perfil")]
+        [Authorize]
+        public async Task<IActionResult> EditProfileUser([FromBody] EditProfileUserDto editProfileUserDto)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+
+
+            var userId = userIdClaim.Value;
+
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+                return NotFound("Usuario no encontrado");
+            }
+
+
+            var result = await _authRepository.EditProfile(userId, editProfileUserDto);
+
+            if(result != null)
+            {
+               return Ok(
+                new  {
+                    Message = "Perfil editado correctamente",
+
+                    UpdateUser = new EditProfileUserDto {
+
+                    Name = result.Name,
+                    Birthdate = result.Birthdate,
+                    Gender = result.Gender
+
+                    },
+
+                    newToken = _tokenService.CreateTokenUser(user!)
+
+
+
+                }
+               );
+            }
+
+            return BadRequest("Edicion de perfil fallida");
+
+
+        }
 
 
     }
