@@ -291,6 +291,54 @@ namespace taller1.src.Controllers
         }
 
 
+        [HttpDelete("eliminar-cuenta")]
+        [Authorize]
+
+        public async Task<IActionResult> DeleteProfileUser([FromBody] DeleteAccountDto deleteDto)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+
+
+            var userId = userIdClaim.Value;
+
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+            return NotFound("Usuario no encontrado");
+            }
+    
+            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, deleteDto.Password, false);
+
+            if(!checkPassword.Succeeded)
+            {
+                return Unauthorized("Contraseña Invalida");
+            }
+
+            if(deleteDto.Confirmation != "Confirmo")
+            {
+                return BadRequest("Eliminacion rechazada");
+            }
+
+            var result = await _authRepository.DeleteAccount(userId);
+
+            if(result != null)
+            {
+                
+                return Ok("Cuenta eliminada correctamente");
+
+            }
+
+            return BadRequest("Fallo al eliminar cuenta");
+
+        }
+    
+
 
 
     }

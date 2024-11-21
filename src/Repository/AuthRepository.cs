@@ -154,9 +154,9 @@ namespace taller1.src.Repository
                 return null;
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            await _userManager.DeleteAsync(user);
             return user;
+
         }
 
 
