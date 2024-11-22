@@ -176,7 +176,7 @@ namespace taller1.src.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("actualizar-contrasena")]
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
         {
@@ -190,23 +190,154 @@ namespace taller1.src.Controllers
 
 
             var userId = userIdClaim.Value;
+
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+            return NotFound("Usuario no encontrado");
+            }
     
+            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, newPasswordDto.Password, false);
+
+            if(!checkPassword.Succeeded)
+            {
+                return Unauthorized("Contraseña Invalida");
+            }
 
             if(newPasswordDto.Password == newPasswordDto.NewPassword)
             {
-                return BadRequest("The new password cannot be the same as the previous one");
+                return BadRequest("La nueva contraseña no puede ser igual a la anterior");
             }
 
             if(newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
             {
-                return BadRequest("The new password and the confirmation password must be the same");
+                return BadRequest("La nueva contraseña debe de coincidir con su confirmacion");
             }
 
             var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
 
-            return Ok("Password updated successfully");
+            if(result.Succeeded)
+            {
+
+                var newToken = _tokenService.CreateTokenUser(user!);
+
+                
+                var Response = new {
+
+                    Message = "Contraseña actualizada correctamente",
+                    token = newToken
+                };
+                
+                return Ok(Response);
+
+            }
+
+
+            return BadRequest("Fallo al actualizar contraseña");
+            
+        }
+
+        [HttpPut("editar-perfil")]
+        [Authorize]
+        public async Task<IActionResult> EditProfileUser([FromBody] EditProfileUserDto editProfileUserDto)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+
+
+            var userId = userIdClaim.Value;
+
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+                return NotFound("Usuario no encontrado");
+            }
+
+
+            var result = await _authRepository.EditProfile(userId, editProfileUserDto);
+
+            if(result != null)
+            {
+               return Ok(
+                new  {
+                    Message = "Perfil editado correctamente",
+
+                    UpdateUser = new EditProfileUserDto {
+
+                    Name = result.Name,
+                    Birthdate = result.Birthdate,
+                    Gender = result.Gender
+
+                    },
+
+                    newToken = _tokenService.CreateTokenUser(user!)
+
+
+
+                }
+               );
+            }
+
+            return BadRequest("Edicion de perfil fallida");
+
 
         }
+
+
+        [HttpDelete("eliminar-cuenta")]
+        [Authorize(Roles = "User")]
+
+        public async Task<IActionResult> DeleteProfileUser([FromBody] DeleteAccountDto deleteDto)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+
+
+            var userId = userIdClaim.Value;
+
+            var user = await _authRepository.GetUserByid(userId);
+
+            if (user == null)
+            {
+            return NotFound("Usuario no encontrado");
+            }
+    
+            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, deleteDto.Password, false);
+
+            if(!checkPassword.Succeeded)
+            {
+                return Unauthorized("Contraseña Invalida");
+            }
+
+            if(deleteDto.Confirmation != "Confirmo")
+            {
+                return BadRequest("Eliminacion rechazada");
+            }
+
+            var result = await _authRepository.DeleteAccount(userId);
+
+            if(result != null)
+            {
+                
+                return Ok("Cuenta eliminada correctamente");
+
+            }
+
+            return BadRequest("Fallo al eliminar cuenta");
+
+        }
+    
 
 
 
