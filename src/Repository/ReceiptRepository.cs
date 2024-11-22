@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using taller1.src.Data;
 using taller1.src.Dtos;
+using taller1.src.Dtos.ReceiptDtos;
 using taller1.src.Helpers;
 using taller1.src.Interface;
+using taller1.src.Mappers;
 using taller1.src.Models;
 
 namespace taller1.src.Repository
@@ -15,7 +17,7 @@ namespace taller1.src.Repository
         {
             _context = context; 
         }
-        public async Task<IEnumerable<Receipt>> GetAll(QueryReceipt query)
+        public async Task<List<Receipt>> GetAll(QueryReceipt query)
         {
             var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
             var pageSize = query.PageSize > 0 ? query.PageSize : 10;
@@ -44,7 +46,14 @@ namespace taller1.src.Repository
             var receiptsModels = await receipts.Skip(skipNumber).Take(pageSize).ToListAsync();
 
             return receiptsModels;
-        } 
+        }
 
+        public async Task<Receipt> CreateReceipt(CreateReceiptRequestDto receiptRequestDto, ShoppingCart shoppingCart, AppUser user)
+        {
+            var receiptModel = receiptRequestDto.ToReceiptModel(shoppingCart, user);
+            await _context.Receipts.AddAsync(receiptModel);
+            await _context.SaveChangesAsync();
+            return receiptModel;
+        }
     }
 }
