@@ -35,6 +35,47 @@ namespace taller1.src.Controllers
             return Ok(receipts); //TODO: retornar DTO, no el modelo
         } 
         
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreatePurchase(CreateReceiptRequestDto receiptRequestDto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+            var userId = userIdClaim.Value;
+
+            try
+            {
+                var shoppingCart = await _shoppingCartRepository.GetCartByUserId(userId);
+
+                if (shoppingCart == null || !shoppingCart.ShoppingCartItems.Any())
+                {
+                    return BadRequest("Shopping cart is empty or does not exist.");
+                }
+
+                var insufficientStockItems = shoppingCart.ShoppingCartItems
+                    .Where(item => item.Quantity > item.Product.Stock)
+                    .ToList();
+
+                if (insufficientStockItems.Any())
+                {
+                    var errorMessage = string.Join(", ", insufficientStockItems
+                        .Select(item => $"Not enough stock of {item.Product.Name}"));
+
+                    return BadRequest(errorMessage);
+                }
+
+                //TODO: Get the user and create the receipt after validation
+                // var user = await _authRepository.GetUserByid(userId); // Uncomment after merge to Development
+                // var receipt = await _receiptRepository.CreateReceipt(receiptRequestDto, shoppingCart, user);
+                // var receiptDto = receipt.ToGetReceiptDto();
+                // await _shoppingCartRepository.ClearCart(shoppingCart);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
 
     }
