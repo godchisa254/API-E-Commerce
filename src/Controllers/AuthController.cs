@@ -292,7 +292,7 @@ namespace taller1.src.Controllers
 
 
         [HttpDelete("eliminar-cuenta")]
-        [Authorize]
+        [Authorize(Roles = "User")]
 
         public async Task<IActionResult> DeleteProfileUser([FromBody] DeleteAccountDto deleteDto)
         {
