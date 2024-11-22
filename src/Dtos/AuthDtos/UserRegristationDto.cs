@@ -10,7 +10,8 @@ namespace taller1.src.Dtos
     public class UserRegristationDto
     {
         [Required]
-        [StringLength(12)]
+        [StringLength(20, ErrorMessage = "La contrasena no puede ser mayor a 20 caracteres")]
+        [MinLength(8, ErrorMessage = "la contraseña debe tener al menos 8 caracteres")]
         [Column(TypeName = "varchar")]
         public string Rut { get; set; } = string.Empty;
 
