@@ -8,5 +8,6 @@ namespace taller1.src.Interface
     {
         Task<Receipt> CreateReceipt(CreateReceiptRequestDto receiptRequestDto, ShoppingCart shoppingCart, AppUser user);
         Task<List<Receipt>> GetAll(QueryReceipt query);
+        Task<List<Receipt>> GetByUserId(string userId);
     }
 }

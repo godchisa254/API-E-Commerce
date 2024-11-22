@@ -55,5 +55,14 @@ namespace taller1.src.Repository
             await _context.SaveChangesAsync();
             return receiptModel;
         }
+
+        public async Task<List<Receipt>> GetByUserId(string userId)
+        {
+            return await _context.Receipts
+                .Include(receipt => receipt.ReceiptItemDetails)  
+                .ThenInclude(item => item.Product)  
+                .Where(receipt => receipt.UserID == userId)
+                .ToListAsync();
+        }
     }
 }
