@@ -22,6 +22,9 @@ namespace taller1.src.Repository
             var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
             var pageSize = query.PageSize > 0 ? query.PageSize : 10;
             var receipts = _context.Receipts.AsQueryable();
+            receipts = receipts
+                .Include(receipt => receipt.ReceiptItemDetails) 
+                .ThenInclude(item => item.Product);
 
             if (!string.IsNullOrWhiteSpace(query.Name))
             {
