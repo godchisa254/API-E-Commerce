@@ -13,6 +13,8 @@ namespace taller1.src.Controllers
     [ApiController]
     public class ReceiptController : ControllerBase
     { 
+        private const string CartCookieKey = "TicketsList"; 
+        private const string UserCookieKey = "UserGUID";
         private readonly IReceiptRepository _receiptRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
         private readonly IAuthRepository _authRepository;
@@ -23,7 +25,7 @@ namespace taller1.src.Controllers
             _authRepository = authRepository;
         }
 
-        [HttpGet]
+        [HttpGet("Obtener_todas_las_boletas")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] QueryReceipt query)
         {
@@ -35,6 +37,25 @@ namespace taller1.src.Controllers
             var receipts = await _receiptRepository.GetAll(query);
             var receiptsDto = receipts.Select(receipt => receipt.ToGetReceiptDto()).ToList();
             return Ok(receiptsDto);
+        }
+
+        [HttpGet("Obtener_boletas_propias")]
+        [Authorize]
+        public async Task<IActionResult> GetReceiptById()
+        {
+            string? userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized("User is not authenticated.");
+            }
+            var receipts = await _receiptRepository.GetByUserId(userId);
+            if (receipts == null)
+            {
+                return NotFound();
+            }
+
+            var receiptDtos = receipts.Select(r => r.ToGetReceiptDto()).ToList();
+            return Ok(receiptDtos);
         }
         
         [HttpPost]
@@ -79,7 +100,41 @@ namespace taller1.src.Controllers
                 return BadRequest(e.Message);
             }
         }
+        private string? GetUserId()
+        {
+            string? userId;
+            if (User.Identity?.IsAuthenticated ?? false)
+            {
+                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            else
+            {
+                userId = GetOrCreateUserGuid();
+            }
+            if (userId == null)
+            {
+                return null;
+            }
+            return userId;
+        }
+        private string GetOrCreateUserGuid()
+        {
+            var userGuid = Request.Cookies[UserCookieKey];
 
+            if (string.IsNullOrEmpty(userGuid))
+            {
+                userGuid = Guid.NewGuid().ToString();
+                var cookieOptions = new CookieOptions
+                {
+                    Path = "/",
+                    HttpOnly = false,
+                    Secure = false,
+                    Expires = DateTime.Now.AddDays(7)
+                };
+                Response.Cookies.Append(UserCookieKey, userGuid, cookieOptions);
+            }
 
+            return userGuid;
+        }
     }
 }
