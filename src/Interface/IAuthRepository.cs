@@ -15,9 +15,9 @@ namespace taller1.src.Interface
 
         Task<IdentityResult> AddRole(AppUser user, string role);
 
-        Task<AppUser?> GetUserByEmail(string email);
+        Task<AppUserDto> GetUserByEmail(string email);
 
-        Task<string?> GetRol(AppUser user);
+        Task<string?> GetRolbyEmail(string email);
 
         Task<IdentityResult> UpdatePassword(string id, ChangePasswordDto request);
 
@@ -27,10 +27,14 @@ namespace taller1.src.Interface
 
         Task EnableDisableUser(AppUser user);
 
-        Task<AppUser?> GetUserByid(string id);
+        Task<AppUserDto> GetUserByid(string id);
 
         Task<IdentityResult> EditProfile(string id, EditProfileUserDto request);
 
         Task<IdentityResult> DeleteAccount(string id);
+
+        Task<IdentityResult> checkPasswordbyId(string id, string newPassword);
+
+        Task<IdentityResult> checkPasswordbyEmail(string id, string newPassword);
     }
 }

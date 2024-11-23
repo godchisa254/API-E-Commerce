@@ -10,6 +10,7 @@ using Microsoft.VisualBasic;
 using taller1.src.Dtos;
 using taller1.src.Dtos.AuthDtos;
 using taller1.src.Interface;
+using taller1.src.Mappers;
 using taller1.src.Models;
 
 
@@ -24,13 +25,11 @@ namespace taller1.src.Controllers
 
         private readonly ITokenService _tokenService;
 
-        private readonly SignInManager<AppUser> _signInManager;
 
-        public AuthController(IAuthRepository authRepository, ITokenService tokenService, SignInManager<AppUser> signInManager)
+        public AuthController(IAuthRepository authRepository, ITokenService tokenService)
         {
             _authRepository = authRepository;
             _tokenService = tokenService;
-            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -53,7 +52,7 @@ namespace taller1.src.Controllers
 
                 var appUser = new AppUser
                     {
-                        //aplicar mapper
+                        //ahcerlo dto y aplicar mapper
                         UserName = registerDto.Email,  
                         Email = registerDto.Email,
                         Rut = registerDto.Rut,
@@ -128,14 +127,17 @@ namespace taller1.src.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var appUser = await _authRepository.GetUserByEmail(loginDto.Email);
+                var appUserDto = await _authRepository.GetUserByEmail(loginDto.Email);
+
+                AppUser appUser = appUserDto.ToUser();
 
                 if(appUser == null)
                 {
                     return NotFound("Correo o Contraseña Invalidos");
                 }   
 
-                var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginDto.Password, false);
+
+                var result = await _authRepository.checkPasswordbyEmail(loginDto.Email, loginDto.Password);
 
                 if(!result.Succeeded || appUser == null)
                 {
@@ -147,7 +149,8 @@ namespace taller1.src.Controllers
                     return Unauthorized("Usuario deshabilitado, inicio de sesión no permitido.");
                 }
 
-                string? appRol = await _authRepository.GetRol(appUser);
+                //reciba el email y devuelva el rol
+                string? appRol = await _authRepository.GetRolbyEmail(loginDto.Email);
 
                 string createToken;
 
@@ -183,62 +186,68 @@ namespace taller1.src.Controllers
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
         {
-            //aplicar try and catch
-            
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+            try{
+
+                if(!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
 
 
-            var userId = userIdClaim.Value;
+                var userId = userIdClaim.Value;
 
-            var user = await _authRepository.GetUserByid(userId);
+                var checkPassword = await _authRepository.checkPasswordbyId(userId, newPasswordDto.Password);
 
-            if (user == null)
-            {
-            return NotFound("Usuario no encontrado");
-            }
-    
-            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, newPasswordDto.Password, false);
 
-            if(!checkPassword.Succeeded)
-            {
-                return Unauthorized("Contraseña Invalida");
-            }
 
-            if(newPasswordDto.Password == newPasswordDto.NewPassword)
-            {
-                return BadRequest("La nueva contraseña no puede ser igual a la anterior");
-            }
+                if(!checkPassword.Succeeded)
+                {
+                    return Unauthorized("Contraseña Invalida");
+                }
 
-            if(newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
-            {
-                return BadRequest("La nueva contraseña debe de coincidir con su confirmacion");
-            }
+                if(newPasswordDto.Password == newPasswordDto.NewPassword)
+                {
+                    return BadRequest("La nueva contraseña no puede ser igual a la anterior");
+                }
 
-            var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
+                if(newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
+                {
+                    return BadRequest("La nueva contraseña debe de coincidir con su confirmacion");
+                }
 
-            if(result.Succeeded)
-            {
+                var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
 
-                var newToken = _tokenService.CreateTokenUser(user!);
+                if(result.Succeeded)
+                {
+
+                    var user = await _authRepository.GetUserByid(userId);
+
+                    AppUser appUser = user.ToUser();
+
+                    var newToken = _tokenService.CreateTokenUser(appUser!);
 
                 
-                var Response = new {
+                    var Response = new {
 
                     Message = "Contraseña actualizada correctamente",
                     token = newToken
-                };
+                    };
                 
-                return Ok(Response);
+                    return Ok(Response);
 
+                }
+
+
+                return BadRequest("Fallo al actualizar contraseña");
+
+            }catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
             }
-
-
-            return BadRequest("Fallo al actualizar contraseña");
+            
             
         }
 
@@ -257,7 +266,6 @@ namespace taller1.src.Controllers
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
 
-
                 var userId = userIdClaim.Value;
 
 
@@ -267,7 +275,9 @@ namespace taller1.src.Controllers
                 if(result.Succeeded)
                 {
 
-                    var appUser = await _authRepository.GetUserByid(userId);
+                    var userDto = await _authRepository.GetUserByid(userId);
+
+                    AppUser appUser = userDto.ToUser();
 
                     return Ok(
                     new  {
@@ -319,12 +329,10 @@ namespace taller1.src.Controllers
 
 
                 var userId = userIdClaim.Value;
-
-                var user = await _authRepository.GetUserByid(userId);
     
-                var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, deleteDto.Password, false);
+                var checkPassword = await _authRepository.checkPasswordbyId(userId, deleteDto.Password);
 
-                if(!checkPassword.Succeeded)
+                if(checkPassword.Succeeded)
                 {
                     return Unauthorized("Contraseña Invalida");
                 }
@@ -336,7 +344,7 @@ namespace taller1.src.Controllers
 
                 var result = await _authRepository.DeleteAccount(userId);
 
-                if(result != null)
+                if(result.Succeeded)
                 {
                 
                     return Ok("Cuenta eliminada correctamente");

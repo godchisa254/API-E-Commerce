@@ -6,6 +6,7 @@ using taller1.src.Data;
 using taller1.src.Dtos.AuthDtos;
 using taller1.src.Helpers;
 using taller1.src.Interface;
+using taller1.src.Mappers;
 using taller1.src.Models;
 
 namespace taller1.src.Repository
@@ -18,10 +19,13 @@ namespace taller1.src.Repository
 
         private readonly UserManager<AppUser> _userManager;
 
-        public AuthRepository(ApplicationDBContext context, UserManager<AppUser> userManager)
+        private readonly SignInManager<AppUser> _signInManager;
+
+        public AuthRepository(ApplicationDBContext context, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<bool> ExistByRut(string rut)
@@ -39,13 +43,25 @@ namespace taller1.src.Repository
             return await _userManager.AddToRoleAsync(user, role);
         }
 
-        public async Task<AppUser?> GetUserByEmail(string email)
+        public async Task<AppUserDto> GetUserByEmail(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (appUser == null)
+            {
+                throw new Exception("Usuario no encontrado");;
+            }
+
+            AppUserDto appUserDto = appUser.ToUserDto();
+
+            return appUserDto;
+            
         }
 
-        public async Task<string?> GetRol(AppUser user)
+        public async Task<string?> GetRolbyEmail(string email)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
             var rol = await _userManager.GetRolesAsync(user!);
 
             return rol.FirstOrDefault();
@@ -57,7 +73,7 @@ namespace taller1.src.Repository
 
             if (user == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+                return IdentityResult.Failed(new IdentityError { Description = "Usuario no encontrado" });
             }
 
             var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
@@ -119,9 +135,20 @@ namespace taller1.src.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<AppUser?> GetUserByid(string id)
+        public async Task<AppUserDto> GetUserByid(string id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (appUser == null)
+            {
+                throw new Exception("Usuario no encontrado");;
+            }
+
+            AppUserDto appUserDto = appUser.ToUserDto();
+
+            return appUserDto;
+            
+
         }
 
         public async Task<IdentityResult> EditProfile(string id, EditProfileUserDto request)
@@ -130,7 +157,7 @@ namespace taller1.src.Repository
 
             if (user == null)
             {
-                throw new Exception("Usuario no encontrado");;
+                throw new Exception("Usuario no encontrado");
             }
 
             //TODO aplicar mapper
@@ -140,7 +167,7 @@ namespace taller1.src.Repository
 
             await _context.SaveChangesAsync();
             await _userManager.UpdateSecurityStampAsync(user);
-            return IdentityResult.Success; ;
+            return IdentityResult.Success; 
 
         }
 
@@ -151,13 +178,42 @@ namespace taller1.src.Repository
 
             if (user == null)
             {
-                return null!;
+                throw new Exception("Usuario no encontrado");
             }
 
             return await _userManager.DeleteAsync(user);
 
         }
 
+        public async Task<IdentityResult> checkPasswordbyId(string id, string newPassword)
+        {
+            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
+            if(appUser == null)
+            {
+                throw new Exception("Usuario no encontrado");
+            }
+
+            var checkPassword= await _signInManager.CheckPasswordSignInAsync(appUser!, newPassword, false);
+
+            return IdentityResult.Success; 
+
+        }
+
+        public async Task<IdentityResult> checkPasswordbyEmail(string email, string password)
+        {
+             var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);;
+
+            if(appUser == null)
+            {
+                throw new Exception("Usuario no encontrado");
+            }
+
+            var checkPassword= await _signInManager.CheckPasswordSignInAsync(appUser!, password, false);
+
+            return IdentityResult.Success; 
+
+
+        }
     }
 }
