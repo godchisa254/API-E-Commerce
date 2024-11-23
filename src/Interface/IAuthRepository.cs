@@ -29,7 +29,7 @@ namespace taller1.src.Interface
 
         Task<AppUser?> GetUserByid(string id);
 
-        Task<AppUser> EditProfile(string id, EditProfileUserDto request);
+        Task<IdentityResult> EditProfile(string id, EditProfileUserDto request);
 
         Task<IdentityResult> DeleteAccount(string id);
     }

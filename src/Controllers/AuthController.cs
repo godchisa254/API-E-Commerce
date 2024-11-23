@@ -53,6 +53,7 @@ namespace taller1.src.Controllers
 
                 var appUser = new AppUser
                     {
+                        //aplicar mapper
                         UserName = registerDto.Email,  
                         Email = registerDto.Email,
                         Rut = registerDto.Rut,
@@ -85,7 +86,8 @@ namespace taller1.src.Controllers
                                 Rut = appUser.Rut,
                                 Name = appUser.Name,
                                 Email = appUser.Email,
-                               Token = _tokenService.CreateTokenUser(appUser)
+                                //eliminar token
+                                Token = _tokenService.CreateTokenUser(appUser)
                             }
                         );
                     }
@@ -161,6 +163,7 @@ namespace taller1.src.Controllers
                 return Ok(
                     new NewUserDto
                     {
+                        //aplicar mapper
                         Rut = appUser.Rut!,
                         Name = appUser.Name!,
                         Email = appUser.Email!,
@@ -180,6 +183,7 @@ namespace taller1.src.Controllers
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
         {
+            //aplicar try and catch
             
             if(!ModelState.IsValid)
             {
@@ -242,50 +246,57 @@ namespace taller1.src.Controllers
         [Authorize]
         public async Task<IActionResult> EditProfileUser([FromBody] EditProfileUserDto editProfileUserDto)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
+            try{
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
-
-
-            var userId = userIdClaim.Value;
-
-            var user = await _authRepository.GetUserByid(userId);
-
-            if (user == null)
-            {
-                return NotFound("Usuario no encontrado");
-            }
-
-
-            var result = await _authRepository.EditProfile(userId, editProfileUserDto);
-
-            if(result != null)
-            {
-               return Ok(
-                new  {
-                    Message = "Perfil editado correctamente",
-
-                    UpdateUser = new EditProfileUserDto {
-
-                    Name = result.Name,
-                    Birthdate = result.Birthdate,
-                    Gender = result.Gender
-
-                    },
-
-                    newToken = _tokenService.CreateTokenUser(user!)
-
-
-
+                if(!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
                 }
-               );
+
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+
+
+                var userId = userIdClaim.Value;
+
+
+                var result = await _authRepository.EditProfile(userId, editProfileUserDto);
+
+
+                if(result.Succeeded)
+                {
+
+                    var appUser = await _authRepository.GetUserByid(userId);
+
+                    return Ok(
+                    new  {
+                        Message = "Perfil editado correctamente",
+
+
+                        UpdateUser = new EditProfileUserDto {
+                        //aplicar mapper
+                        Name = appUser!.Name,
+                        Birthdate = appUser.Birthdate,
+                        Gender = appUser.Gender
+
+                        },
+
+                        newToken = _tokenService.CreateTokenUser(appUser!)
+
+                        }
+                    );
+                }
+
+                return BadRequest("Edicion de perfil fallida");
+
+
+            }catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
             }
 
-            return BadRequest("Edicion de perfil fallida");
+
 
 
         }
@@ -296,40 +307,51 @@ namespace taller1.src.Controllers
 
         public async Task<IActionResult> DeleteProfileUser([FromBody] DeleteAccountDto deleteDto)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+            try{
+
+                if(!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
 
 
-            var userId = userIdClaim.Value;
+                var userId = userIdClaim.Value;
 
-            var user = await _authRepository.GetUserByid(userId);
+                var user = await _authRepository.GetUserByid(userId);
     
-            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, deleteDto.Password, false);
+                var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, deleteDto.Password, false);
 
-            if(!checkPassword.Succeeded)
-            {
-                return Unauthorized("Contraseña Invalida");
-            }
+                if(!checkPassword.Succeeded)
+                {
+                    return Unauthorized("Contraseña Invalida");
+                }
 
-            if(deleteDto.Confirmation != "Confirmo")
-            {
-                return BadRequest("Eliminacion rechazada");
-            }
+                if(deleteDto.Confirmation.ToLower() != "confirmo")
+                {
+                    return BadRequest("Eliminacion rechazada");
+                }
 
-            var result = await _authRepository.DeleteAccount(userId);
+                var result = await _authRepository.DeleteAccount(userId);
 
-            if(result != null)
-            {
+                if(result != null)
+                {
                 
-                return Ok("Cuenta eliminada correctamente");
+                    return Ok("Cuenta eliminada correctamente");
 
+                }
+
+                return BadRequest("Fallo al eliminar cuenta");
+
+
+
+
+            }catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
             }
-
-            return BadRequest("Fallo al eliminar cuenta");
 
         }
     

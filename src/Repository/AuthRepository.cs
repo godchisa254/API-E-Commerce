@@ -124,23 +124,23 @@ namespace taller1.src.Repository
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<AppUser> EditProfile(string id, EditProfileUserDto request)
+        public async Task<IdentityResult> EditProfile(string id, EditProfileUserDto request)
         {
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
             {
-                throw new Exception("Product not found");;
+                throw new Exception("Usuario no encontrado");;
             }
 
-
+            //TODO aplicar mapper
             user.Name = request.Name;
             user.Birthdate = request.Birthdate;
             user.Gender = request.Gender;
 
             await _context.SaveChangesAsync();
             await _userManager.UpdateSecurityStampAsync(user);
-            return user;
+            return IdentityResult.Success; ;
 
         }
 
