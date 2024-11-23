@@ -17,6 +17,20 @@ namespace taller1.src.Mappers
                 Email = appUser.Email ?? string.Empty
             };
         }
-    }
+
+        public static AppUser ToGetUser(this GetUserDto UserDto)
+        {
+            return new AppUser
+            {
+                Rut = UserDto.Rut,
+                Name = UserDto.Name,
+                Birthdate = UserDto.Birthdate,
+                Gender = UserDto.Gender,
+                enabledUser = UserDto.enabledUser,
+                Email = UserDto.Email ?? string.Empty
+
+            };
+        }
+    }    
 
 }

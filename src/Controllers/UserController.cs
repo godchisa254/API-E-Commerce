@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Mappers;
+using taller1.src.Models;
 
 namespace taller1.src.Controllers
 {
@@ -42,15 +43,15 @@ namespace taller1.src.Controllers
         [HttpPut("{rut}")]
         public async Task<IActionResult> EnableDisableUser(string rut)
         {
-            var user = await _authRepository.GetUserByRut(rut);
-            if (user == null)
-            {
-                return NotFound();
-            }
+            try {
 
-            user.enabledUser = !user.enabledUser;
-            await _authRepository.EnableDisableUser(user);
-            return Ok(user.ToGetUserDto());
+                await _authRepository.EnableDisableUser(rut);
+                return Ok("Usuario Actualizado" );
+
+            } catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

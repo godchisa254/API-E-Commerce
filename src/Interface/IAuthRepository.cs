@@ -16,20 +16,18 @@ namespace taller1.src.Interface
 
         Task<IdentityResult> AddRole(AppUser user, string role);
 
-        //TODO QUE RETORNE DTO
         Task<AppUserDto> GetUserByEmail(string email);
 
         Task<string?> GetRolbyEmail(string email);
 
         Task<IdentityResult> UpdatePassword(string id, ChangePasswordDto request);
 
-        //TODO QUE RETORNE DTO
         Task<List<GetUserDto>> GetAllUsers(QueryUser query);
 
-        //TODO QUE RETORNE DTO
-        Task<AppUser?> GetUserByRut(string rut);
+        //TODO QUE RETORNE DTO eliniar
+        Task<GetUserDto> GetUserByRut(string rut);
 
-        Task EnableDisableUser(AppUser user);
+        Task EnableDisableUser(string rut);
 
         Task<AppUserDto> GetUserByid(string id);
 

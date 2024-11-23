@@ -124,14 +124,30 @@ namespace taller1.src.Repository
 
             return AppUserDto.Select(u => u.ToGetUserDto()).ToList();
         }
-
-        public async Task<AppUser?> GetUserByRut(string rut)
+        //borrar
+        public async Task<GetUserDto> GetUserByRut(string rut)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
+
+            if(user == null)
+            {
+                throw new Exception("Usuario no encontrado");
+            }
+
+            return user.ToGetUserDto();
         }
 
-        public async Task EnableDisableUser(AppUser user)
+        public async Task EnableDisableUser(string rut)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
+
+            if(user == null)
+            {
+                throw new Exception("Usuario no encontrado");
+            }
+
+            user.enabledUser = !user.enabledUser;
+
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
@@ -142,7 +158,7 @@ namespace taller1.src.Repository
 
             if (appUser == null)
             {
-                throw new Exception("Usuario no encontrado");;
+                throw new Exception("Usuario no encontrado");
             }
 
             AppUserDto appUserDto = appUser.ToUserDto();
