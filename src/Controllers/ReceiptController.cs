@@ -76,6 +76,7 @@ namespace taller1.src.Controllers
 
                 var insufficientStockItems = shoppingCart.ShoppingCartItems
                     .Where(item => item.Quantity > item.Product.Stock)
+                    .Where(item => item.Product.Stock > 0)
                     .ToList();
 
                 if (insufficientStockItems.Any())
@@ -92,8 +93,9 @@ namespace taller1.src.Controllers
                 var receipt = await _receiptRepository.CreateReceipt(receiptRequestDto, shoppingCart, user);
                 var receiptDto = receipt.ToGetReceiptDto();
                 // await _shoppingCartRepository.ClearCart(shoppingCart); //TODO: Implementar método para limpiar carrito
+                // await _productRepository.UpdateStock(shoppingCart.ShoppingCartItems); //TODO: Implementar método para actualizar stock
 
-                return Ok();
+                return Ok(receiptDto);
             }
             catch (Exception e)
             {
