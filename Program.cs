@@ -106,6 +106,7 @@ builder.Services.AddScoped<ISeederRepository, SeederRepository>();
 builder.Services.AddScoped<DataSeeder>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+builder.Services.AddScoped<IReceiptRepository, ReceiptRepository>();
 
 
 var app = builder.Build();
