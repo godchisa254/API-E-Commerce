@@ -22,10 +22,11 @@ namespace taller1.src.Mappers
                 Commune = receiptModel.Commune,
                 Street = receiptModel.Street,
                 Date = receiptModel.Date,
-                Total = receiptModel.Total
+                Total = receiptModel.Total,
+                ReceiptItemDetails = receiptModel.ReceiptItemDetails
             };
         }
-        // Mapeo de GetReceiptDto a receiptModel
+        // Mapeo de CreateReceiptRequestDto a receiptModel
         public static Receipt ToReceiptModel(this CreateReceiptRequestDto createReceiptDto, ShoppingCart shoppingCart, AppUser user)
         {
             var total = shoppingCart.ShoppingCartItems.Sum(item => item.Product.Price * item.Quantity);
