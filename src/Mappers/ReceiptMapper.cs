@@ -56,6 +56,18 @@ namespace taller1.src.Mappers
                 ReceiptItemDetails = receiptItems
             };
         }
-        
+        // Mapeo de receiptItemDetailModel a ReceiptItemDetailDto
+        public static ReceiptItemDetailDto ToReceiptItemDetailsDto(this ReceiptItemDetail receiptItemDetailsModel)
+        {
+            return new ReceiptItemDetailDto
+            {
+                ProductID = receiptItemDetailsModel.ProductID,
+                Name = receiptItemDetailsModel.Name,
+                Type = receiptItemDetailsModel.Type,
+                UnitPrice = receiptItemDetailsModel.UnitPrice,
+                Quantity = receiptItemDetailsModel.Quantity,
+                TotalItemPrice = receiptItemDetailsModel.TotalPrice
+            };
+        }
     }
 }
