@@ -73,7 +73,7 @@ namespace taller1.src.Controllers
             { 
                 var cart = await GetCart(userId);
 
-                if (cart == null || !cart.ShoppingCartItems.Any())
+                if (cart == null)
                 {
                     return NotFound("Shopping cart not found or is empty.");
                 }
@@ -96,11 +96,17 @@ namespace taller1.src.Controllers
                     {
                         return NotFound("Product not found.");
                     }
-
+                    if (product.Stock < quantity)
+                    {
+                        return BadRequest($"Not enough stock available for the product {product.Name}.");
+                    }
+                    //TODO: use mapper
                     cart.ShoppingCartItems.Add(new ShoppingCartItem
                     {
-                        ProductID = productId,
+                        ShoppingCartID = cart.ID,
+                        ProductID = product.ID,
                         Quantity = quantity,
+                        ShoppingCart = cart,
                         Product = product
                     });
                     Console.WriteLine("Product added to cart");
