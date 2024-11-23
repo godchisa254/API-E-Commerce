@@ -20,6 +20,7 @@ namespace taller1.src.Repository
                 .Include(cart => cart.AppUser)  
                 .Include(cart => cart.ShoppingCartItems)
                 .ThenInclude(item => item.Product)
+                .ThenInclude(product => product.ProductType)
                 .FirstOrDefaultAsync(cart => cart.UserID == userId);
  
             if (cart == null)
