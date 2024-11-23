@@ -24,6 +24,7 @@ namespace taller1.src.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] QueryReceipt query)
         {
             if(!ModelState.IsValid)
@@ -34,7 +35,7 @@ namespace taller1.src.Controllers
             var receipts = await _receiptRepository.GetAll(query);
             var receiptsDto = receipts.Select(receipt => receipt.ToGetReceiptDto()).ToList();
             return Ok(receiptsDto);
-        } 
+        }
         
         [HttpPost]
         [Authorize]
