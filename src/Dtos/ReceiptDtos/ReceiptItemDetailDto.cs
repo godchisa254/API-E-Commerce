@@ -8,5 +8,6 @@ namespace taller1.src.Dtos.ReceiptDtos
         public float UnitPrice { get; set; } 
         public int Quantity { get; set; } 
         public float TotalItemPrice { get; set; } 
+        public string Image { get; set; } = string.Empty;
     }
 }

@@ -23,7 +23,7 @@ namespace taller1.src.Mappers
                 Street = receiptModel.Street,
                 Date = receiptModel.Date,
                 Total = receiptModel.Total,
-                ReceiptItemDetails = receiptModel.ReceiptItemDetails
+                ReceiptItemDetailsDto = receiptModel.ReceiptItemDetails.Select(item => item.ToReceiptItemDetailsDto()).ToList()
             };
         }
         // Mapeo de CreateReceiptRequestDto a receiptModel
@@ -66,7 +66,8 @@ namespace taller1.src.Mappers
                 Type = receiptItemDetailsModel.Type,
                 UnitPrice = receiptItemDetailsModel.UnitPrice,
                 Quantity = receiptItemDetailsModel.Quantity,
-                TotalItemPrice = receiptItemDetailsModel.TotalPrice
+                TotalItemPrice = receiptItemDetailsModel.TotalPrice,
+                Image = receiptItemDetailsModel.Product.Image
             };
         }
     }

@@ -12,7 +12,7 @@ namespace taller1.src.Dtos.ReceiptDtos
         public string Street { get; set; } = string.Empty; 
         public DateOnly Date { get; set; } 
         public float Total { get; set; } 
-        public required List<ReceiptItemDetail> ReceiptItemDetails { get; set; }
+        public required List<ReceiptItemDetailDto> ReceiptItemDetailsDto { get; set; }
         
     }
 }
