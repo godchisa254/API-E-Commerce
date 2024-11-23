@@ -307,11 +307,6 @@ namespace taller1.src.Controllers
             var userId = userIdClaim.Value;
 
             var user = await _authRepository.GetUserByid(userId);
-
-            if (user == null)
-            {
-            return NotFound("Usuario no encontrado");
-            }
     
             var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, deleteDto.Password, false);
 

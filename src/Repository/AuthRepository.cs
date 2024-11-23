@@ -145,17 +145,16 @@ namespace taller1.src.Repository
         }
 
 
-        public async Task<AppUser?> DeleteAccount(string id)
+        public async Task<IdentityResult> DeleteAccount(string id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
             {
-                return null;
+                return null!;
             }
 
-            await _userManager.DeleteAsync(user);
-            return user;
+            return await _userManager.DeleteAsync(user);
 
         }
 
