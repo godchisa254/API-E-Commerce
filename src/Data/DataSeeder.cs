@@ -71,7 +71,6 @@ namespace taller1.src.Data
                         Rut = admin.Rut,
                         Name = admin.Name,
                         Email = admin.Email,
-                        Token = _tokenService.CreateTokenAdmin(admin)
                     };
                     
                 }

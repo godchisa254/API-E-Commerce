@@ -52,7 +52,7 @@ namespace taller1.src.Controllers
 
                 var appUser = new AppUser
                     {
-                        //ahcerlo dto y aplicar mapper
+                        //hacerlo dto y aplicar mapper
                         UserName = registerDto.Email,  
                         Email = registerDto.Email,
                         Rut = registerDto.Rut,
@@ -79,14 +79,13 @@ namespace taller1.src.Controllers
 
                     if(role.Succeeded)
                     {
+                        //usar maper
                         return Ok(
                             new NewUserDto
                             {
                                 Rut = appUser.Rut,
                                 Name = appUser.Name,
                                 Email = appUser.Email,
-                                //eliminar token
-                                Token = _tokenService.CreateTokenUser(appUser)
                             }
                         );
                     }
@@ -149,7 +148,6 @@ namespace taller1.src.Controllers
                     return Unauthorized("Usuario deshabilitado, inicio de sesión no permitido.");
                 }
 
-                //reciba el email y devuelva el rol
                 string? appRol = await _authRepository.GetRolbyEmail(loginDto.Email);
 
                 string createToken;
@@ -164,7 +162,7 @@ namespace taller1.src.Controllers
                 }
 
                 return Ok(
-                    new NewUserDto
+                    new NewUserLoginDto
                     {
                         //aplicar mapper
                         Rut = appUser.Rut!,
