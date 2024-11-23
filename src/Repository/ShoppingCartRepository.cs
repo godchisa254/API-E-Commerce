@@ -17,6 +17,7 @@ namespace taller1.src.Repository
         public async Task<ShoppingCart> GetCartByUserId(string userId)
         {
             var cart = await _context.ShoppingCarts
+                .Include(cart => cart.AppUser)  
                 .Include(cart => cart.ShoppingCartItems)
                 .ThenInclude(item => item.Product)
                 .FirstOrDefaultAsync(cart => cart.UserID == userId);
