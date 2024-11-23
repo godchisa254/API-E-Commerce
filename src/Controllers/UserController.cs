@@ -36,8 +36,7 @@ namespace taller1.src.Controllers
             }
 
             var users = await _authRepository.GetAllUsers(query);
-            var usersDtos = users.Select(u => u.ToGetUserDto()).ToList();
-            return Ok(usersDtos);
+            return Ok(users);
         }
 
         [HttpPut("{rut}")]

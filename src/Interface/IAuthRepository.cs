@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using taller1.src.Dtos.AuthDtos;
+using taller1.src.Dtos.UserDtos;
 using taller1.src.Helpers;
 using taller1.src.Models;
 
@@ -15,14 +16,17 @@ namespace taller1.src.Interface
 
         Task<IdentityResult> AddRole(AppUser user, string role);
 
+        //TODO QUE RETORNE DTO
         Task<AppUserDto> GetUserByEmail(string email);
 
         Task<string?> GetRolbyEmail(string email);
 
         Task<IdentityResult> UpdatePassword(string id, ChangePasswordDto request);
 
-        Task<List<AppUser>> GetAllUsers(QueryUser query);
+        //TODO QUE RETORNE DTO
+        Task<List<GetUserDto>> GetAllUsers(QueryUser query);
 
+        //TODO QUE RETORNE DTO
         Task<AppUser?> GetUserByRut(string rut);
 
         Task EnableDisableUser(AppUser user);

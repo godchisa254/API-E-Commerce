@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using taller1.src.Data;
 using taller1.src.Dtos.AuthDtos;
+using taller1.src.Dtos.UserDtos;
 using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Mappers;
@@ -87,7 +88,7 @@ namespace taller1.src.Repository
             return IdentityResult.Failed(result.Errors.ToArray());
         }
 
-        public async Task<List<AppUser>> GetAllUsers(QueryUser query)
+        public async Task<List<GetUserDto>> GetAllUsers(QueryUser query)
         {
             var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
             var pageSize = query.PageSize > 0 ? query.PageSize : 10;
@@ -119,9 +120,9 @@ namespace taller1.src.Repository
             }
 
             var skipNumber = (pageNumber - 1) * pageSize;
-            var AppUserModels = await users.Skip(skipNumber).Take(pageSize).ToListAsync();
+            var AppUserDto = await users.Skip(skipNumber).Take(pageSize).ToListAsync();
 
-            return AppUserModels;
+            return AppUserDto.Select(u => u.ToGetUserDto()).ToList();
         }
 
         public async Task<AppUser?> GetUserByRut(string rut)
