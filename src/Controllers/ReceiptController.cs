@@ -32,7 +32,8 @@ namespace taller1.src.Controllers
             }
 
             var receipts = await _receiptRepository.GetAll(query);
-            return Ok(receipts); //TODO: retornar DTO, no el modelo
+            var receiptsDto = receipts.Select(receipt => receipt.ToGetReceiptDto()).ToList();
+            return Ok(receiptsDto);
         } 
         
         [HttpPost]
@@ -63,11 +64,12 @@ namespace taller1.src.Controllers
                     return BadRequest(errorMessage);
                 }
 
-                //TODO: Get the user and create the receipt after validation
-                // var user = await _authRepository.GetUserByid(userId); // Uncomment after merge to Development
-                // var receipt = await _receiptRepository.CreateReceipt(receiptRequestDto, shoppingCart, user);
-                // var receiptDto = receipt.ToGetReceiptDto();
-                // await _shoppingCartRepository.ClearCart(shoppingCart);
+                
+                var user = await _authRepository.GetUserByid(userId); 
+                if (user == null){ return BadRequest("User not found, you must be logged in to make a purchase."); }
+                var receipt = await _receiptRepository.CreateReceipt(receiptRequestDto, shoppingCart, user);
+                var receiptDto = receipt.ToGetReceiptDto();
+                // await _shoppingCartRepository.ClearCart(shoppingCart); //TODO: Implementar método para limpiar carrito
 
                 return Ok();
             }
