@@ -49,17 +49,8 @@ namespace taller1.src.Controllers
 
                 }
 
+                AppUser appUser = registerDto.ToUserRegister();
 
-                var appUser = new AppUser
-                    {
-                        //hacerlo dto y aplicar mapper
-                        UserName = registerDto.Email,  
-                        Email = registerDto.Email,
-                        Rut = registerDto.Rut,
-                        Name = registerDto.Name,  
-                        Birthdate = registerDto.Birthdate,
-                        Gender = registerDto.Gender
-                    };
 
                 if(string.IsNullOrEmpty(registerDto.Password))
                 {
@@ -79,15 +70,11 @@ namespace taller1.src.Controllers
 
                     if(role.Succeeded)
                     {
-                        //usar maper
-                        return Ok(
-                            new NewUserDto
-                            {
-                                Rut = appUser.Rut,
-                                Name = appUser.Name,
-                                Email = appUser.Email,
-                            }
-                        );
+ 
+                        NewUserDto newUser = appUser.ToUserNewUserDto();
+
+                        return Ok(newUser);
+
                     }
                     else
                     {
@@ -116,6 +103,7 @@ namespace taller1.src.Controllers
             }
         }
 
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
@@ -130,11 +118,18 @@ namespace taller1.src.Controllers
 
                 AppUser appUser = appUserDto.ToUser();
 
-                if(appUser == null)
+                checkLoginDto checkLogin = appUser.ToCheckLoginDto();
+
+
+                if(checkLogin == null)
                 {
                     return NotFound("Correo o Contraseña Invalidos");
                 }   
 
+                if(!checkLogin.enabledUser)
+                {
+                    return Unauthorized("Usuario deshabilitado");
+                }
 
                 var result = await _authRepository.checkPasswordbyEmail(loginDto.Email, loginDto.Password);
 
@@ -147,6 +142,7 @@ namespace taller1.src.Controllers
                 {
                     return Unauthorized("Usuario deshabilitado, inicio de sesión no permitido.");
                 }
+
 
                 string? appRol = await _authRepository.GetRolbyEmail(loginDto.Email);
 
@@ -161,16 +157,11 @@ namespace taller1.src.Controllers
                     createToken = _tokenService.CreateTokenUser(appUser);
                 }
 
-                return Ok(
-                    new NewUserLoginDto
-                    {
-                        //aplicar mapper
-                        Rut = appUser.Rut!,
-                        Name = appUser.Name!,
-                        Email = appUser.Email!,
-                        Token = createToken
-                    }
-                );
+                NewUserLoginDto newUser = appUser.toNewUserLoginDto();
+
+                newUser.Token = createToken;
+
+                return Ok(newUser);
 
 
             }
@@ -179,6 +170,8 @@ namespace taller1.src.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+
 
         [HttpPut("actualizar-contrasena")]
         [Authorize]
@@ -196,6 +189,7 @@ namespace taller1.src.Controllers
 
 
                 var userId = userIdClaim.Value;
+
 
                 var checkPassword = await _authRepository.checkPasswordbyId(userId, newPasswordDto.Password);
 
@@ -246,6 +240,8 @@ namespace taller1.src.Controllers
                 return StatusCode(500, e.Message);
             }
             
+
+
             
         }
 
@@ -277,20 +273,16 @@ namespace taller1.src.Controllers
 
                     AppUser appUser = userDto.ToUser();
 
+                    var newToken = _tokenService.CreateTokenUser(appUser!);
+
+                    EditProfileTokenDto editUser = appUser.ToUserEditProfileToken();
+                    editUser.Token = newToken;
+
                     return Ok(
                     new  {
                         Message = "Perfil editado correctamente",
 
-
-                        UpdateUser = new EditProfileUserDto {
-                        //aplicar mapper
-                        Name = appUser!.Name,
-                        Birthdate = appUser.Birthdate,
-                        Gender = appUser.Gender
-
-                        },
-
-                        newToken = _tokenService.CreateTokenUser(appUser!)
+                        editUser
 
                         }
                     );
@@ -330,7 +322,7 @@ namespace taller1.src.Controllers
     
                 var checkPassword = await _authRepository.checkPasswordbyId(userId, deleteDto.Password);
 
-                if(checkPassword.Succeeded)
+                if(!checkPassword.Succeeded)
                 {
                     return Unauthorized("Contraseña Invalida");
                 }

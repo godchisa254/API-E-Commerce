@@ -202,7 +202,7 @@ namespace taller1.src.Repository
 
         public async Task<IdentityResult> checkPasswordbyEmail(string email, string password)
         {
-             var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);;
+            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);;
 
             if(appUser == null)
             {

@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace taller1.src.Dtos.AuthDtos
 {
-    public class NewUserLoginDto
+    public class checkLoginDto
     {
-        public string Id { get; set; } = string.Empty;
-        
         [Required]
         [StringLength(12)]
         [Column(TypeName = "varchar")]
@@ -25,6 +23,6 @@ namespace taller1.src.Dtos.AuthDtos
         [StringLength(255)]
         public string Email { get; set; } = string.Empty;
 
-        public string Token { get; set; } = string.Empty;
+        public bool enabledUser { get; set; } = true;
     }
 }

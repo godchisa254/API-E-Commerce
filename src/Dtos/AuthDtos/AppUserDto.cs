@@ -25,5 +25,7 @@ namespace taller1.src.Dtos.AuthDtos
         [StringLength(255)]
         public string Email { get; set; } = string.Empty;
 
+        public bool enabledUser { get; set; } = true;
+
     }
 }
