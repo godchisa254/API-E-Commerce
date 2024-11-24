@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 
-namespace taller1.src.Models
+namespace taller1.src.Dtos.AuthDtos
 {
-    public class AppUser : IdentityUser
+    public class AppUserDto
     {
-        // Removemos el ID personalizado ya que IdentityUser ya proporciona Id como string
+        public string Id { get; set; } = string.Empty;
         
         [Required]
         [StringLength(12)]
@@ -22,21 +21,19 @@ namespace taller1.src.Models
         public string Name { get; set; } = string.Empty;
 
         [Required]
+        [EmailAddress]
+        [StringLength(255)]
+        public string Email { get; set; } = string.Empty;
+
+        public bool enabledUser { get; set; } = true;
+
         public DateOnly Birthdate { get; set; }
 
-        [Required]
         [Range(0, 4)]
         public int Gender { get; set; }
 
-        [Required]
-        [StringLength(20)]
-        [Column(TypeName = "varchar")]
-        public string Password { get; set; } = string.Empty;
 
-        public string Token { get; set; } = string.Empty;
 
-        public bool enabledUser { get; set; } = true;
-        public List<Receipt> Receipts { get; set; } = [];
-        public virtual ShoppingCart? ShoppingCart { get; set; }
+
     }
 }
