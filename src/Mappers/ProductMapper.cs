@@ -34,5 +34,18 @@ namespace taller1.src.Mappers
                 Image = imageUrl
             };
         }
+
+        // Mapeo de productModel a ShoppingCartItemDto
+        public static ShoppingCartItem ToShoppingCartItem(this Product productModel, ShoppingCart cart, int quantity)
+        {
+            return new ShoppingCartItem
+            {
+                ShoppingCartID = cart.ID,
+                ProductID = productModel.ID,
+                Quantity = quantity,
+                ShoppingCart = cart,
+                Product = productModel
+            };
+        }
     }
 }
