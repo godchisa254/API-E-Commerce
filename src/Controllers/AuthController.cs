@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Bogus.DataSets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using Microsoft.VisualBasic;
 using taller1.src.Dtos;
 using taller1.src.Dtos.AuthDtos;
 using taller1.src.Interface;
+using taller1.src.Mappers;
 using taller1.src.Models;
 
 
@@ -24,13 +26,11 @@ namespace taller1.src.Controllers
 
         private readonly ITokenService _tokenService;
 
-        private readonly SignInManager<AppUser> _signInManager;
 
-        public AuthController(IAuthRepository authRepository, ITokenService tokenService, SignInManager<AppUser> signInManager)
+        public AuthController(IAuthRepository authRepository, ITokenService tokenService)
         {
             _authRepository = authRepository;
             _tokenService = tokenService;
-            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -50,16 +50,13 @@ namespace taller1.src.Controllers
 
                 }
 
+                if(registerDto.Birthdate.Year >= DateTime.Now.Year)
+                {
+                    return BadRequest("La fecha de nacimiento debe ser menor a la actual");
+                }
 
-                var appUser = new AppUser
-                    {
-                        UserName = registerDto.Email,  
-                        Email = registerDto.Email,
-                        Rut = registerDto.Rut,
-                        Name = registerDto.Name,  
-                        Birthdate = registerDto.Birthdate,
-                        Gender = registerDto.Gender
-                    };
+                AppUser appUser = registerDto.ToUserRegister();
+
 
                 if(string.IsNullOrEmpty(registerDto.Password))
                 {
@@ -79,15 +76,11 @@ namespace taller1.src.Controllers
 
                     if(role.Succeeded)
                     {
-                        return Ok(
-                            new NewUserDto
-                            {
-                                Rut = appUser.Rut,
-                                Name = appUser.Name,
-                                Email = appUser.Email,
-                               Token = _tokenService.CreateTokenUser(appUser)
-                            }
-                        );
+ 
+                        NewUserDto newUser = appUser.ToUserNewUserDto();
+
+                        return Ok(newUser);
+
                     }
                     else
                     {
@@ -116,6 +109,7 @@ namespace taller1.src.Controllers
             }
         }
 
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
@@ -126,14 +120,24 @@ namespace taller1.src.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var appUser = await _authRepository.GetUserByEmail(loginDto.Email);
+                var appUserDto = await _authRepository.GetUserByEmail(loginDto.Email);
 
-                if(appUser == null)
+                AppUser appUser = appUserDto.ToUser();
+
+                checkLoginDto checkLogin = appUser.ToCheckLoginDto();
+
+
+                if(checkLogin == null)
                 {
                     return NotFound("Correo o Contraseña Invalidos");
                 }   
 
-                var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginDto.Password, false);
+                if(!checkLogin.enabledUser)
+                {
+                    return Unauthorized("Usuario deshabilitado");
+                }
+
+                var result = await _authRepository.checkPasswordbyEmail(loginDto.Email, loginDto.Password);
 
                 if(!result.Succeeded || appUser == null)
                 {
@@ -145,7 +149,8 @@ namespace taller1.src.Controllers
                     return Unauthorized("Usuario deshabilitado, inicio de sesión no permitido.");
                 }
 
-                string? appRol = await _authRepository.GetRol(appUser);
+
+                string? appRol = await _authRepository.GetRolbyEmail(loginDto.Email);
 
                 string createToken;
 
@@ -158,15 +163,11 @@ namespace taller1.src.Controllers
                     createToken = _tokenService.CreateTokenUser(appUser);
                 }
 
-                return Ok(
-                    new NewUserDto
-                    {
-                        Rut = appUser.Rut!,
-                        Name = appUser.Name!,
-                        Email = appUser.Email!,
-                        Token = createToken
-                    }
-                );
+                NewUserLoginDto newUser = appUser.toNewUserLoginDto();
+
+                newUser.Token = createToken;
+
+                return Ok(newUser);
 
 
             }
@@ -176,65 +177,77 @@ namespace taller1.src.Controllers
             }
         }
 
+
+
         [HttpPut("actualizar-contrasena")]
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
         {
-            
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+            try{
+
+                if(!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
 
 
-            var userId = userIdClaim.Value;
+                var userId = userIdClaim.Value;
 
-            var user = await _authRepository.GetUserByid(userId);
 
-            if (user == null)
-            {
-            return NotFound("Usuario no encontrado");
-            }
-    
-            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, newPasswordDto.Password, false);
+                var checkPassword = await _authRepository.checkPasswordbyId(userId, newPasswordDto.Password);
 
-            if(!checkPassword.Succeeded)
-            {
-                return Unauthorized("Contraseña Invalida");
-            }
 
-            if(newPasswordDto.Password == newPasswordDto.NewPassword)
-            {
-                return BadRequest("La nueva contraseña no puede ser igual a la anterior");
-            }
 
-            if(newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
-            {
-                return BadRequest("La nueva contraseña debe de coincidir con su confirmacion");
-            }
+                if(!checkPassword.Succeeded)
+                {
+                    return Unauthorized("Contraseña Invalida");
+                }
 
-            var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
+                if(newPasswordDto.Password == newPasswordDto.NewPassword)
+                {
+                    return BadRequest("La nueva contraseña no puede ser igual a la anterior");
+                }
 
-            if(result.Succeeded)
-            {
+                if(newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
+                {
+                    return BadRequest("La nueva contraseña debe de coincidir con su confirmacion");
+                }
 
-                var newToken = _tokenService.CreateTokenUser(user!);
+                var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
+
+                if(result.Succeeded)
+                {
+
+                    var user = await _authRepository.GetUserByid(userId);
+
+                    AppUser appUser = user.ToUser();
+
+                    var newToken = _tokenService.CreateTokenUser(appUser!);
 
                 
-                var Response = new {
+                    var Response = new {
 
                     Message = "Contraseña actualizada correctamente",
                     token = newToken
-                };
+                    };
                 
-                return Ok(Response);
+                    return Ok(Response);
 
+                }
+
+
+                return BadRequest("Fallo al actualizar contraseña");
+
+            }catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
             }
+            
 
 
-            return BadRequest("Fallo al actualizar contraseña");
             
         }
 
@@ -242,99 +255,102 @@ namespace taller1.src.Controllers
         [Authorize]
         public async Task<IActionResult> EditProfileUser([FromBody] EditProfileUserDto editProfileUserDto)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+
+            try{
+
+                
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+
+                var userId = userIdClaim.Value;
+
+                var result = await _authRepository.EditProfile(userId, editProfileUserDto);
 
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+                if(result.Succeeded)
+                {
+
+                    var userDto = await _authRepository.GetUserByid(userId);
+
+                    AppUser appUser = userDto.ToUser();
+
+                    var newToken = _tokenService.CreateTokenUser(appUser!);
+
+                    EditProfileTokenDto editUser = appUser.ToUserEditProfileToken();
+                    editUser.Token = newToken;
 
 
-            var userId = userIdClaim.Value;
+                    return Ok(
+                    new  {
+                        Message = "Perfil editado correctamente",
 
-            var user = await _authRepository.GetUserByid(userId);
+                        editUser
 
-            if (user == null)
-            {
-                return NotFound("Usuario no encontrado");
-            }
-
-
-            var result = await _authRepository.EditProfile(userId, editProfileUserDto);
-
-            if(result != null)
-            {
-               return Ok(
-                new  {
-                    Message = "Perfil editado correctamente",
-
-                    UpdateUser = new EditProfileUserDto {
-
-                    Name = result.Name,
-                    Birthdate = result.Birthdate,
-                    Gender = result.Gender
-
-                    },
-
-                    newToken = _tokenService.CreateTokenUser(user!)
-
-
-
+                        }
+                    );
                 }
-               );
+
+                return BadRequest("Edicion de perfil fallida");
+
+
+            }catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
             }
 
-            return BadRequest("Edicion de perfil fallida");
 
+            
 
         }
-
+  
 
         [HttpDelete("eliminar-cuenta")]
         [Authorize(Roles = "User")]
 
         public async Task<IActionResult> DeleteProfileUser([FromBody] DeleteAccountDto deleteDto)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
+            try{
+
+                if(!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
 
 
-            var userId = userIdClaim.Value;
-
-            var user = await _authRepository.GetUserByid(userId);
-
-            if (user == null)
-            {
-            return NotFound("Usuario no encontrado");
-            }
+                var userId = userIdClaim.Value;
     
-            var checkPassword= await _signInManager.CheckPasswordSignInAsync(user!, deleteDto.Password, false);
+                var checkPassword = await _authRepository.checkPasswordbyId(userId, deleteDto.Password);
 
-            if(!checkPassword.Succeeded)
-            {
-                return Unauthorized("Contraseña Invalida");
-            }
+                if(!checkPassword.Succeeded)
+                {
+                    return Unauthorized("Contraseña Invalida");
+                }
 
-            if(deleteDto.Confirmation != "Confirmo")
-            {
-                return BadRequest("Eliminacion rechazada");
-            }
+                if(deleteDto.Confirmation.ToLower() != "confirmo")
+                {
+                    return BadRequest("Eliminacion rechazada");
+                }
 
-            var result = await _authRepository.DeleteAccount(userId);
+                var result = await _authRepository.DeleteAccount(userId);
 
-            if(result != null)
-            {
+                if(result.Succeeded)
+                {
                 
-                return Ok("Cuenta eliminada correctamente");
+                    return Ok("Cuenta eliminada correctamente");
 
+                }
+
+                return BadRequest("Fallo al eliminar cuenta");
+
+
+
+
+            }catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
             }
-
-            return BadRequest("Fallo al eliminar cuenta");
 
         }
     
