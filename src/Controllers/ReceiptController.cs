@@ -38,7 +38,7 @@ namespace taller1.src.Controllers
             var receiptsDto = receipts.Select(receipt => receipt.ToGetReceiptDto()).ToList();
             return Ok(receiptsDto);
         }
-
+        
         [HttpGet("Obtener_boletas_propias")]
         [Authorize]
         public async Task<IActionResult> GetReceiptById()

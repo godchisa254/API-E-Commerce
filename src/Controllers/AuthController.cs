@@ -48,13 +48,13 @@ namespace taller1.src.Controllers
             _authRepository = authRepository;
             _tokenService = tokenService;
         }
+        
 
         /// <summary>
         /// Registra un nuevo usuario en el sistema.
         /// </summary>
         /// <param name="registerDto">DTO de registro del usuario. Para más detalles, ver <see cref="UserRegristationDto"/>.</param>
         /// <returns>Respuesta con el usuario creado o un mensaje de error.</returns>
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegristationDto registerDto)
         {
@@ -131,12 +131,12 @@ namespace taller1.src.Controllers
             }
         }
 
+
         /// <summary>
         /// Inicia sesión en el sistema con credenciales del usuario.
         /// </summary>
         /// <param name="loginDto">DTO de inicio de sesión del usuario. Para más detalles, ver <see cref="LoginDto"/>.</param>
         /// <returns>Respuesta con el token de sesión y los detalles del usuario, o un mensaje de error.</returns>
-
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
@@ -205,12 +205,12 @@ namespace taller1.src.Controllers
         }
 
 
+
         /// <summary>
         /// Actualiza la contraseña del usuario autenticado.
         /// </summary>
         /// <param name="newPasswordDto">DTO con las contraseñas nueva y actual del usuario. Para más detalles, ver <see cref="ChangePasswordDto"/>.</param>
         /// <returns>Respuesta indicando éxito o error en la actualización.</returns>
-
         [HttpPut("actualizar-contrasena")]
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
@@ -342,16 +342,15 @@ namespace taller1.src.Controllers
             
 
         }
+
   
         /// <summary>
         /// Elimina la cuenta del usuario autenticado.
         /// </summary>
         /// <param name="deleteDto">DTO con la contraseña y confirmación para eliminar la cuenta. Para más detalles, ver <see cref="DeleteAccountDto"/>.</param>
         /// <returns>Respuesta indicando éxito o error en la eliminación.</returns>
-
         [HttpDelete("eliminar-cuenta")]
         [Authorize(Roles = "User")]
-
         public async Task<IActionResult> DeleteProfileUser([FromBody] DeleteAccountDto deleteDto)
         {
 
