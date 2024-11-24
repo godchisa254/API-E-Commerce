@@ -51,9 +51,9 @@ namespace taller1.src.Repository
             return receiptsModels;
         }
 
-        public async Task<Receipt> CreateReceipt(CreateReceiptRequestDto receiptRequestDto, ShoppingCart shoppingCart, AppUser user)
+        public async Task<Receipt> CreateReceipt(CreateReceiptRequestDto receiptRequestDto, ShoppingCart shoppingCart)
         {
-            var receiptModel = receiptRequestDto.ToReceiptModel(shoppingCart, user);
+            var receiptModel = receiptRequestDto.ToReceiptModel(shoppingCart);
             await _context.Receipts.AddAsync(receiptModel);
             await _context.SaveChangesAsync();
             return receiptModel;

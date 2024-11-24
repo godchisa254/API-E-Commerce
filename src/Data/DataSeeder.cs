@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using taller1.src.Dtos;
 using taller1.src.Dtos.AuthDtos;
 using taller1.src.Interface;
+using taller1.src.Dtos.ProductDtos;
+using taller1.src.Mappers;
 
 
 namespace taller1.src.Data
@@ -77,10 +79,7 @@ namespace taller1.src.Data
             }
 
         }
-        
 
-
-       
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
 
         {
@@ -90,48 +89,9 @@ namespace taller1.src.Data
                 var context = services.GetRequiredService<ApplicationDBContext>();
 
                 await SeedProductTypes(context);
+                await SeedProducts(context);
 
-                // if(!context.UserRoles.Any())
-                // {
-                //     context.UserRoles.AddRange(
-                //         new UserRole {Role = "Administrador"},
-                //         new UserRole {Role = "Usuario"}
-                //     );
-
-                //     context.SaveChanges();
-                // }
-
-                var existingRuts = new HashSet<string>();
-
-                // if(!context.Users.Any())
-                // {
-                //     var userFaker = new Faker<User>()
-                //         .RuleFor(u => u.Rut , f => GenerateUniqueRandomRut(existingRuts))
-                //         .RuleFor(u => u.Name , f => f.Person.FullName)
-                //         .RuleFor(u => u.Birthdate, f => f.Date.Past(30, DateTime.Now.AddYears(-18)))
-                //         .RuleFor(u => u.Email , f => f.Person.Email)
-                //         .RuleFor(u => u.Gender, f => f.PickRandom(new[] { 0, 1, 2, 3 }))
-                //         .RuleFor(u => u.Password, f => f.Internet.Password())
-                //         .RuleFor(u => u.UserRoleID , f => f.Random.Number(1,2));
-                    
-                //     var users = userFaker.Generate(10);
-                //     context.Users.AddRange(users);
-                //     context.SaveChanges();
-                // }
-
-                // if(!context.Products.Any())
-                // {
-                //     var productFaker = new Faker<Product>()
-                //         .RuleFor(p => p.Name , f => f.Commerce.ProductName())
-                //         .RuleFor(p => p.ProductTypeID, f => f.PickRandom(new[] { 0, 1, 2, 3, 4 }))
-                //         .RuleFor(p => p.Price , f => f.Random.Number(1000, 1000000))
-                //         .RuleFor(p => p.Stock, f => f.Random.Number(1, 100))
-                //         .RuleFor(p => p.Image, f => f.Image.PicsumUrl());
-                    
-                //     var products = productFaker.Generate(10);
-                //     context.Products.AddRange(products);
-                //     context.SaveChanges();
-                // }
+                var existingRuts = new HashSet<string>(); 
 
                 context.SaveChanges();
 
@@ -198,6 +158,29 @@ namespace taller1.src.Data
                     {
                         context.ProductTypes.Add(type);
                     }
+                }
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task SeedProducts(ApplicationDBContext context)
+        {
+            if(!context.Products.Any())
+            {
+                var productsDtos = new List<GetProductDto>
+                {
+                    new GetProductDto { ProductTypeID = 1, Name = "Polera de algodón", Price = 10000, Stock = 10, Image = "https://fakelink.photos/200" },
+                    new GetProductDto { ProductTypeID = 2, Name = "Gorro de lana", Price = 5000, Stock = 5, Image = "https://fakelink.photos/201"  },
+                    new GetProductDto { ProductTypeID = 3, Name = "Pelota de fútbol", Price = 15000, Stock = 20, Image = "https://fakelink.photos/202"  },
+                    new GetProductDto { ProductTypeID = 4, Name = "Leche", Price = 2000, Stock = 30, Image = "https://fakelink.photos/203"  },
+                    new GetProductDto { ProductTypeID = 5, Name = "Cien años de soledad", Price = 25000, Stock = 10, Image = "https://fakelink.photos/204"  }
+                };
+
+                var productModels = productsDtos.Select(p => p.ToProductFromGetDto()).ToList();
+                foreach (var product in productModels)
+                { 
+                    await context.Products.AddAsync(product);
                 }
 
                 await context.SaveChangesAsync();

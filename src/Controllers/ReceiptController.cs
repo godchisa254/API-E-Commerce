@@ -86,11 +86,8 @@ namespace taller1.src.Controllers
 
                     return BadRequest(errorMessage);
                 }
-
                 
-                var user = await _authRepository.GetUserByid(userId); 
-                if (user == null){ return BadRequest("User not found, you must be logged in to make a purchase."); }
-                var receipt = await _receiptRepository.CreateReceipt(receiptRequestDto, shoppingCart, user);
+                var receipt = await _receiptRepository.CreateReceipt(receiptRequestDto, shoppingCart);
                 var receiptDto = receipt.ToGetReceiptDto();
                 // await _shoppingCartRepository.ClearCart(shoppingCart); //TODO: Implementar método para limpiar carrito
                 // await _productRepository.UpdateStock(shoppingCart.ShoppingCartItems); //TODO: Implementar método para actualizar stock

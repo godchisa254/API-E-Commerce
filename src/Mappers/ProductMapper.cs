@@ -34,5 +34,17 @@ namespace taller1.src.Mappers
                 Image = imageUrl
             };
         }
+        // Mapeo de GetProductDto a productModel
+        public static Product ToProductFromGetDto(this GetProductDto productDto)
+        {
+            return new Product
+            {
+                ProductTypeID = productDto.ProductTypeID,
+                Name = productDto.Name,
+                Price = productDto.Price,
+                Stock = productDto.Stock,
+                Image = productDto.Image
+            };
+        }
     }
 }

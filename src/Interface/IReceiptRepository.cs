@@ -6,7 +6,7 @@ namespace taller1.src.Interface
 {
     public interface IReceiptRepository
     {
-        Task<Receipt> CreateReceipt(CreateReceiptRequestDto receiptRequestDto, ShoppingCart shoppingCart, AppUser user);
+        Task<Receipt> CreateReceipt(CreateReceiptRequestDto receiptRequestDto, ShoppingCart shoppingCart);
         Task<List<Receipt>> GetAll(QueryReceipt query);
         Task<List<Receipt>> GetByUserId(string userId);
     }
