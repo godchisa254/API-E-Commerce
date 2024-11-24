@@ -124,18 +124,6 @@ namespace taller1.src.Repository
 
             return AppUserDto.Select(u => u.ToGetUserDto()).ToList();
         }
-        //borrar
-        public async Task<GetUserDto> GetUserByRut(string rut)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
-
-            if(user == null)
-            {
-                throw new Exception("Usuario no encontrado");
-            }
-
-            return user.ToGetUserDto();
-        }
 
         public async Task EnableDisableUser(string rut)
         {
@@ -172,21 +160,28 @@ namespace taller1.src.Repository
         {
             var user = await _userManager.FindByIdAsync(id);
 
-            if (user == null)
+            if (!string.IsNullOrWhiteSpace(request.Name) || request.Name!.ToLower() != "string")
             {
-                throw new Exception("Usuario no encontrado");
+                user!.Name = request.Name;
             }
 
-            //TODO aplicar mapper
-            user.Name = request.Name;
-            user.Birthdate = request.Birthdate;
-            user.Gender = request.Gender;
+            if (request.Birthdate!= null )
+            {
+                
+                user!.Birthdate = request.Birthdate!.Value;
+
+            }
+
+            if (request.Gender != null)
+            {
+               user!.Gender = request.Gender.Value;
+            }
 
             await _context.SaveChangesAsync();
-            await _userManager.UpdateSecurityStampAsync(user);
+            await _userManager.UpdateSecurityStampAsync(user!);
             return IdentityResult.Success; 
 
-        }
+        }   
 
 
         public async Task<IdentityResult> DeleteAccount(string id)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Bogus.DataSets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,11 @@ namespace taller1.src.Controllers
                 {
                     return BadRequest(ModelState);
 
+                }
+
+                if(registerDto.Birthdate.Year >= DateTime.Now.Year)
+                {
+                    return BadRequest("La fecha de nacimiento debe ser menor a la actual");
                 }
 
                 AppUser appUser = registerDto.ToUserRegister();
@@ -252,16 +258,10 @@ namespace taller1.src.Controllers
 
             try{
 
-                if(!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-
+                
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
 
                 var userId = userIdClaim.Value;
-
 
                 var result = await _authRepository.EditProfile(userId, editProfileUserDto);
 
@@ -277,6 +277,7 @@ namespace taller1.src.Controllers
 
                     EditProfileTokenDto editUser = appUser.ToUserEditProfileToken();
                     editUser.Token = newToken;
+
 
                     return Ok(
                     new  {
@@ -297,10 +298,10 @@ namespace taller1.src.Controllers
             }
 
 
-
+            
 
         }
-
+  
 
         [HttpDelete("eliminar-cuenta")]
         [Authorize(Roles = "User")]

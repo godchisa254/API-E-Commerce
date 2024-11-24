@@ -24,9 +24,6 @@ namespace taller1.src.Interface
 
         Task<List<GetUserDto>> GetAllUsers(QueryUser query);
 
-        //TODO QUE RETORNE DTO eliniar
-        Task<GetUserDto> GetUserByRut(string rut);
-
         Task EnableDisableUser(string rut);
 
         Task<AppUserDto> GetUserByid(string id);

@@ -27,5 +27,13 @@ namespace taller1.src.Dtos.AuthDtos
 
         public bool enabledUser { get; set; } = true;
 
+        public DateOnly Birthdate { get; set; }
+
+        [Range(0, 4)]
+        public int Gender { get; set; }
+
+
+
+
     }
 }

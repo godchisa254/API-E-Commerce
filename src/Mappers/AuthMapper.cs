@@ -19,7 +19,9 @@ namespace taller1.src.Mappers
                 Rut = userDto.Rut,
                 Name = userDto.Name,
                 Email = userDto.Email,
-                enabledUser = userDto.enabledUser
+                enabledUser = userDto.enabledUser,
+                Birthdate = userDto.Birthdate,
+                Gender = userDto.Gender
             };
         }
 
@@ -32,7 +34,9 @@ namespace taller1.src.Mappers
                 Rut = user.Rut,
                 Name = user.Name,
                 Email = user.Email!,
-                enabledUser = user.enabledUser
+                enabledUser = user.enabledUser,
+                Birthdate = user.Birthdate,
+                Gender = user.Gender
             };
 
         }    
@@ -118,6 +122,8 @@ namespace taller1.src.Mappers
 
             };    
         }
+
+
 
 
     }
