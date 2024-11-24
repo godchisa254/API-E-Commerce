@@ -53,7 +53,7 @@ namespace taller1.src.Mappers
         /// </summary>
         /// <param name="userDto">El DTO de inicio de sesión.</param>
         /// <returns>Un objeto <see cref="AppUser"/> basado en los datos proporcionados.</returns>
-        public static AppUser ToUserCheckLogin(this checkLoginDto userDto)
+        public static AppUser toUserCheckLogin(this checkLoginDto userDto)
         {
             return new AppUser
             {
@@ -101,7 +101,7 @@ namespace taller1.src.Mappers
         /// </summary>
         /// <param name="user">El modelo de usuario.</param>
         /// <returns>Un objeto <see cref="NewUserLoginDto"/> basado en el modelo proporcionado.</returns>
-        public static NewUserLoginDto ToNewUserLoginDto(this AppUser user)
+        public static NewUserLoginDto toNewUserLoginDto(this AppUser user)
         {
             return new NewUserLoginDto
             {
