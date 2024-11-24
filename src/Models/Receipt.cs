@@ -42,9 +42,9 @@ namespace taller1.src.Models
         public float Total { get; set; }
 
         [Required]
-        public required AppUser User { get; set; } 
+        public AppUser User { get; set; } = null!;
         
         [Required]
-        public required List<ReceiptItemDetail> ReceiptItemDetails { get; set; }
+        public List<ReceiptItemDetail> ReceiptItemDetails { get; set; } = new List<ReceiptItemDetail>();
     }
 }

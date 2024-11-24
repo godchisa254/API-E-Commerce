@@ -27,7 +27,7 @@ namespace taller1.src.Mappers
             };
         }
         // Mapeo de CreateReceiptRequestDto a receiptModel
-        public static Receipt ToReceiptModel(this CreateReceiptRequestDto createReceiptDto, ShoppingCart shoppingCart, AppUser user)
+        public static Receipt ToReceiptModel(this CreateReceiptRequestDto createReceiptDto, ShoppingCart shoppingCart)
         {
             var total = shoppingCart.ShoppingCartItems.Sum(item => item.Product.Price * item.Quantity);
 
@@ -51,9 +51,7 @@ namespace taller1.src.Mappers
                 Commune = createReceiptDto.Commune,
                 Street = createReceiptDto.Street,
                 Date = DateOnly.FromDateTime(DateTime.Now),
-                Total = total,
-                User = user,
-                ReceiptItemDetails = receiptItems
+                Total = total
             };
         }
         // Mapeo de receiptItemDetailModel a ReceiptItemDetailDto
