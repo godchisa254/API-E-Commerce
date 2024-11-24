@@ -54,7 +54,8 @@ namespace taller1.src.Repository
 
         public async Task<Product?> GetById(int id)
         {
-            var productModel = await _context.Products.FindAsync(id);
+            var productModel = await _context.Products
+                .Include(p => p.ProductType).FirstOrDefaultAsync(p => p.ID == id);
             if (productModel == null)
             {
                 throw new KeyNotFoundException($"Product with ID {id} not found.");

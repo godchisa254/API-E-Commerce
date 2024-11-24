@@ -35,13 +35,16 @@ namespace taller1.src.Models
         public string Street { get; set; } = string.Empty;
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(9, 2)")]
         public float Total { get; set; }
 
-        public AppUser User { get; set; } = null!;
-        public List<ReceiptItemDetail> ReceiptItemDetails { get; set; } = [];
+        [Required]
+        public required AppUser User { get; set; } 
+        
+        [Required]
+        public required List<ReceiptItemDetail> ReceiptItemDetails { get; set; }
     }
 }
