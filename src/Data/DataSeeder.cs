@@ -65,17 +65,6 @@ namespace taller1.src.Data
             {
                 var role = await _seederRepository.AddRole(admin, "Admin");
 
-                if(role.Succeeded)
-                {
-                    
-                    new NewUserDto
-                    {
-                        Rut = admin.Rut,
-                        Name = admin.Name,
-                        Email = admin.Email,
-                    };
-                    
-                }
             }
 
         }

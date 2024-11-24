@@ -17,22 +17,44 @@ using taller1.src.Models;
 
 namespace taller1.src.Controllers
 {
+    /// <summary>
+    /// Controlador para la autenticación y gestión de usuarios.
+    /// Proporciona métodos para registro, inicio de sesión, actualización de contraseñas, edición de perfil y eliminación de cuentas.
+    /// </summary>
+    /// 
     [Route("api/[controller]")]
     [ApiController]
 
     public class AuthController : ControllerBase
     {
+        /// <summary>
+        /// Patron repostory de Auth
+        /// </summary>
         private readonly IAuthRepository _authRepository;
 
+        /// <summary>
+        /// Servicio para generacion de jtoken JWT .
+        /// </summary>
         private readonly ITokenService _tokenService;
 
 
+        /// <summary>
+        /// Constructor del AuthController.
+        /// </summary>
+        /// <param name="authRepository">Repositorio de Auth.</param>
+        /// <param name="tokenService">Servicio para la generacion de tokens JWT.</param>
         public AuthController(IAuthRepository authRepository, ITokenService tokenService)
         {
             _authRepository = authRepository;
             _tokenService = tokenService;
         }
+        
 
+        /// <summary>
+        /// Registra un nuevo usuario en el sistema.
+        /// </summary>
+        /// <param name="registerDto">DTO de registro del usuario. Para más detalles, ver <see cref="UserRegristationDto"/>.</param>
+        /// <returns>Respuesta con el usuario creado o un mensaje de error.</returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegristationDto registerDto)
         {
@@ -110,6 +132,11 @@ namespace taller1.src.Controllers
         }
 
 
+        /// <summary>
+        /// Inicia sesión en el sistema con credenciales del usuario.
+        /// </summary>
+        /// <param name="loginDto">DTO de inicio de sesión del usuario. Para más detalles, ver <see cref="LoginDto"/>.</param>
+        /// <returns>Respuesta con el token de sesión y los detalles del usuario, o un mensaje de error.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
@@ -179,6 +206,11 @@ namespace taller1.src.Controllers
 
 
 
+        /// <summary>
+        /// Actualiza la contraseña del usuario autenticado.
+        /// </summary>
+        /// <param name="newPasswordDto">DTO con las contraseñas nueva y actual del usuario. Para más detalles, ver <see cref="ChangePasswordDto"/>.</param>
+        /// <returns>Respuesta indicando éxito o error en la actualización.</returns>
         [HttpPut("actualizar-contrasena")]
         [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordDto newPasswordDto)
@@ -251,6 +283,15 @@ namespace taller1.src.Controllers
             
         }
 
+
+        /// <summary>
+        /// Edita el perfil del usuario autenticado.
+        /// </summary>
+        /// <param name="editProfileUserDto">DTO con los datos del perfil a actualizar. Para más detalles, ver <see cref="EditProfileUserDto"/>.</param>
+        /// <returns>Respuesta con el perfil actualizado y un nuevo token de sesión, o un mensaje de error.</returns>
+        /// <remarks>
+        /// Si no se desea cambiar algún campo, se deberá asignar un valor <c>null</c> a dicho campo. 
+        /// </remarks>
         [HttpPut("editar-perfil")]
         [Authorize]
         public async Task<IActionResult> EditProfileUser([FromBody] EditProfileUserDto editProfileUserDto)
@@ -301,11 +342,15 @@ namespace taller1.src.Controllers
             
 
         }
-  
 
+  
+        /// <summary>
+        /// Elimina la cuenta del usuario autenticado.
+        /// </summary>
+        /// <param name="deleteDto">DTO con la contraseña y confirmación para eliminar la cuenta. Para más detalles, ver <see cref="DeleteAccountDto"/>.</param>
+        /// <returns>Respuesta indicando éxito o error en la eliminación.</returns>
         [HttpDelete("eliminar-cuenta")]
         [Authorize(Roles = "User")]
-
         public async Task<IActionResult> DeleteProfileUser([FromBody] DeleteAccountDto deleteDto)
         {
 
