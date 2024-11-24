@@ -160,7 +160,7 @@ namespace taller1.src.Mappers
                 Token = user.Token
             };
         }
-
+        
         /// <summary>
         /// Convierte un modelo de usuario en un DTO de usuario general.
         /// </summary>
@@ -178,5 +178,6 @@ namespace taller1.src.Mappers
                 Email = appUser.Email ?? string.Empty
             };
         }
+
     }
 }
