@@ -7,7 +7,7 @@ using taller1.src.Models;
 namespace taller1.src.Interface
 {
     /// <summary>
-    /// Interfaz que define los métodos necesarios para la gestión de autenticación y usuarios en el sistema.
+    /// Interfaz que define los métodos necesarios para la intervención en la base de datos con la autenticación y usuarios en el sistema.
     /// </summary>
     public interface IAuthRepository
     {

@@ -26,7 +26,6 @@ namespace taller1.src.Repository
         /// <param name="context">Contexto de la base de datos.</param>
         /// <param name="userManager">Gestor de usuarios para manejar operaciones relacionadas con usuarios.</param>
         /// <param name="signInManager">Gestor de inicio de sesión para manejar la autenticación de los usuarios.</param>
-
         public AuthRepository(ApplicationDBContext context, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
         {
             _context = context;
