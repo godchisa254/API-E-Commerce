@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 using taller1.src.Interface;
 using taller1.src.Models;
 
 namespace taller1.src.Controllers
 {
+    /// <summary>
+    /// Controlador encargado de gestionar el carrito de compras del usuario.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ShoppingCartController : ControllerBase
@@ -20,12 +18,22 @@ namespace taller1.src.Controllers
         private const string UserCookieKey = "UserGUID";
         private readonly IShoppingCartRepository _shoppingCartRepository;
         private readonly IProductRepository _productRepository;
+
+        /// <summary>
+        /// Constructor del controlador. 
+        /// </summary>
+        /// <param name="shoppingCartRepository">Repositorio de carrito de compras.</param>
+        /// <param name="productRepository">Repositorio de productos.</param>
         public ShoppingCartController(IShoppingCartRepository shoppingCartRepository, IProductRepository productRepository)
         {
             _shoppingCartRepository = shoppingCartRepository;
             _productRepository = productRepository;
         }
 
+        /// <summary>
+        /// Obtiene el carrito de compras del usuario actual.
+        /// </summary>
+        /// <returns>Un resultado con los productos del carrito de compras.</returns>
         [HttpGet]
         [AllowAnonymous] 
         public async Task<IActionResult> GetCart()
@@ -60,6 +68,12 @@ namespace taller1.src.Controllers
             }
         }
         
+        /// <summary>
+        /// Añade un producto al carrito de compras del usuario.
+        /// </summary>
+        /// <param name="productId">ID del producto a agregar.</param>
+        /// <param name="quantity">Cantidad del producto a agregar.</param>
+        /// <returns>Un resultado con los productos actualizados del carrito.</returns>
         [HttpPost("add_product")]
         [AllowAnonymous]
         public async Task<IActionResult> AddToCart(int productId, int quantity)
@@ -130,6 +144,12 @@ namespace taller1.src.Controllers
             }
         }
         
+        /// <summary>
+        /// Elimina una cantidad de un producto del carrito de compras del usuario.
+        /// </summary>
+        /// <param name="productId">ID del producto a eliminar.</param>
+        /// <param name="quantity">Cantidad del producto a eliminar.</param>
+        /// <returns>Un resultado con los productos actualizados del carrito.</returns>
         [HttpPost("deduct_product")]
         [AllowAnonymous]
         public async Task<IActionResult> RemoveFromCart(int productId, int quantity)
@@ -181,6 +201,11 @@ namespace taller1.src.Controllers
             }
         } 
 
+        /// <summary>
+        /// Elimina un producto del carrito de compras del usuario.
+        /// </summary>
+        /// <param name="productId">ID del producto a eliminar.</param>
+        /// <returns>Un resultado con los productos actualizados del carrito.</returns>
         [HttpDelete("remove_product")]
         [AllowAnonymous]
         public async Task<IActionResult> RemoveProduct(int productId)
@@ -227,6 +252,11 @@ namespace taller1.src.Controllers
             }
         }
  
+        /// <summary>
+        /// Guarda el carrito de compras de un usuario, ya sea autenticado o no.
+        /// </summary>
+        /// <param name="cart">El carrito de compras a guardar.</param>
+        /// <param name="userId">El ID del usuario.</param>
         private void SaveCartAnyUser(ShoppingCart cart, string? userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -243,6 +273,10 @@ namespace taller1.src.Controllers
             }
         }
         
+        /// <summary>
+        /// Obtiene el ID del usuario autenticado o crea uno nuevo para un usuario no autenticado.
+        /// </summary>
+        /// <returns>El ID del usuario.</returns>
         private string? GetUserId()
         {
             string? userId;
@@ -261,6 +295,11 @@ namespace taller1.src.Controllers
             return userId;
         }
 
+        /// <summary>
+        /// Obtiene el carrito de compras asociado a un usuario específico.
+        /// </summary>
+        /// <param name="userId">El ID del usuario.</param>
+        /// <returns>El carrito de compras.</returns>
         private async Task<ShoppingCart> GetCart(string? userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -278,6 +317,10 @@ namespace taller1.src.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea o recupera un GUID único para el usuario no autenticado.
+        /// </summary>
+        /// <returns>El GUID del usuario.</returns>
         private string GetOrCreateUserGuid()
         {
             var userGuid = Request.Cookies[UserCookieKey];
@@ -298,6 +341,11 @@ namespace taller1.src.Controllers
             return userGuid;
         }
 
+        /// <summary>
+        /// Obtiene el carrito de compras de un usuario desde las cookies si el usuario no está autenticado.
+        /// </summary>
+        /// <param name="userId">El ID del usuario.</param>
+        /// <returns>El carrito de compras.</returns>
         private ShoppingCart GetCartFromCookies(string userGuid)
         {
             var cookieValue = Request.Cookies[CartCookieKey + "_" + userGuid];
@@ -308,6 +356,11 @@ namespace taller1.src.Controllers
             return new ShoppingCart();
         }
 
+        /// <summary>
+        /// Guarda el carrito de compras de un usuario en las cookies.
+        /// </summary>
+        /// <param name="userId">El ID del usuario.</param>
+        /// <param name="cart">El carrito de compras.</param>
         private Task SaveCartToCookies(string userGuid, ShoppingCart cart)
         {
             var serializedCart = JsonSerializer.Serialize(cart);

@@ -1,31 +1,28 @@
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using taller1.src.Interface;
 using taller1.src.Models;
 
 namespace taller1.src.Services
 {
+    /// <summary>
+    /// Servicio que maneja la creación de tokens JWT para usuarios y administradores.
+    /// </summary>
     public class TokenService : ITokenService
     {
-
-        private readonly IConfiguration _config;
-
         private readonly SymmetricSecurityKey _key;
 
-        public TokenService(IConfiguration config)
+        /// <summary>
+        /// Constructor que inicializa el servicio de creación de tokens con la clave de firma.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Lanzado si la variable de ambiente <signingKey> es nula o vacía.</exception>
+        public TokenService()
         {
-
-            _config = config;
-
             var signingKey = Environment.GetEnvironmentVariable("JWT_KEY");
 
-            if(string.IsNullOrEmpty(signingKey))
+            if (string.IsNullOrEmpty(signingKey))
             {
                 throw new ArgumentNullException(nameof(signingKey));
             }
@@ -33,6 +30,11 @@ namespace taller1.src.Services
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
         }
 
+        /// <summary>
+        /// Crea un token JWT para un usuario.
+        /// </summary>
+        /// <param name="user">El objeto <see cref="AppUser"/> que representa al usuario para el cual se generará el token.</param>
+        /// <returns>Devuelve un token JWT en formato de cadena para el usuario especificado.</returns>
         public string CreateTokenUser(AppUser user)
         {
             var claims = new List<Claim>
@@ -58,9 +60,13 @@ namespace taller1.src.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
-
         }
 
+        /// <summary>
+        /// Crea un token JWT para un administrador.
+        /// </summary>
+        /// <param name="admin">El objeto <see cref="AppUser"/> que representa al administrador para el cual se generará el token.</param>
+        /// <returns>Devuelve un token JWT en formato de cadena para el administrador especificado.</returns>
         public string CreateTokenAdmin(AppUser admin)
         {
             var claims = new List<Claim>
@@ -86,7 +92,6 @@ namespace taller1.src.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
-
         }
     }
 }

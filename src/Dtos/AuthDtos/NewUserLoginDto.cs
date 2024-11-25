@@ -4,11 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace taller1.src.Dtos.AuthDtos
 {
     /// <summary>
-    /// Representa un Data Transfer Object (DTO) se utiliza para mostrar respuesta al momento de registrar un usuario.
+    /// Representa un Data Transfer Object (DTO) se utiliza para mostrar respuesta luego de que el usuario inicie sesion.
     /// </summary>
-    public class NewUserDto
+    public class NewUserLoginDto
     {
-
         /// <summary>
         /// RUT del usuario. Este campo es obligatorio y debe tener un máximo de 12 caracteres.
         /// </summary>
@@ -32,5 +31,9 @@ namespace taller1.src.Dtos.AuthDtos
         [StringLength(255)]
         public string Email { get; set; } = string.Empty;
 
+         /// <summary>
+        /// El token JWT generado para el usuario después de iniciar sesion.
+        /// </summary>
+        public string Token { get; set; } = string.Empty;
     }
 }

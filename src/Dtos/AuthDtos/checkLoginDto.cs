@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace taller1.src.Dtos.AuthDtos
 {
     /// <summary>
-    /// Representa un Data Transfer Object (DTO) se utiliza para mostrar respuesta al momento de registrar un usuario.
+    /// Representa un Data Transfer Object (DTO) utilizado para chequear los datos de un usuario al momento del login.
     /// </summary>
-    public class NewUserDto
+    public class checkLoginDto
     {
-
         /// <summary>
         /// RUT del usuario. Este campo es obligatorio y debe tener un máximo de 12 caracteres.
         /// </summary>
+        /// 
         [Required]
         [StringLength(12)]
         [Column(TypeName = "varchar")]
@@ -32,5 +32,9 @@ namespace taller1.src.Dtos.AuthDtos
         [StringLength(255)]
         public string Email { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Indica si el usuario está habilitado en el sistema. Por defecto, está habilitado.
+        /// </summary>
+        public bool enabledUser { get; set; } = true;
     }
 }

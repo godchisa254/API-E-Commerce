@@ -1,15 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using taller1.src.Dtos.ProductDtos;
 using taller1.src.Models;
 
 namespace taller1.src.Mappers
 {
+    /// <summary>
+    /// Proporciona métodos para mapear entre la entidad <see cref="Product"/> y sus DTOs.
+    /// </summary>
     public static class ProductMapper
     {
-        // Mapeo de productModel a GetProductDto
+        /// <summary>
+        /// Convierte un modelo de producto en un DTO para la respuesta.
+        /// </summary>
+        /// <param name="productModel">El modelo de producto a convertir.</param>
+        /// <returns>
+        /// Un objeto <see cref="GetProductDto"/> que representa el producto.
+        /// </returns>
         public static GetProductDto ToGetProductDto(this Product productModel)
         {
             return new GetProductDto
@@ -22,29 +27,42 @@ namespace taller1.src.Mappers
             };
         }
 
-        // Mapeo de CreateProductRequestDto a productModel
-        public static Product ToProduct(this CreateProductRequestDto productDto, string imageUrl)
+        /// <summary>
+        /// Convierte un DTO de creación de producto en un modelo de producto.
+        /// </summary>
+        /// <param name="createProductRequestDto">El DTO de creación de producto.</param>
+        /// <param name="imageUrl">La URL de la imagen del producto.</param>
+        /// <returns>
+        /// Un objeto <see cref="Product"/> que representa el producto a crear.
+        /// </returns>
+        public static Product ToProduct(this CreateProductRequestDto createProductRequestDto, string imageUrl)
         {
             return new Product
             {
-                ProductTypeID = productDto.ProductTypeID,
-                Name = productDto.Name,
-                Price = productDto.Price,
-                Stock = productDto.Stock,
+                ProductTypeID = createProductRequestDto.ProductTypeID,
+                Name = createProductRequestDto.Name,
+                Price = createProductRequestDto.Price,
+                Stock = createProductRequestDto.Stock,
                 Image = imageUrl
             };
         }
 
-        // Mapeo de productModel a ShoppingCartItemDto
-        public static ShoppingCartItem ToShoppingCartItem(this Product productModel, ShoppingCart cart, int quantity)
+        /// <summary>
+        /// Convierte un DTO de obtención de producto en un modelo de producto.
+        /// </summary>
+        /// <param name="getProductDto">El DTO de obtención de producto.</param>
+        /// <returns>
+        /// Un objeto <see cref="Product"/> que representa el producto.
+        /// </returns>
+        public static Product ToProductFromGetDto(this GetProductDto getProductDto)
         {
-            return new ShoppingCartItem
+            return new Product
             {
-                ShoppingCartID = cart.ID,
-                ProductID = productModel.ID,
-                Quantity = quantity,
-                ShoppingCart = cart,
-                Product = productModel
+                ProductTypeID = getProductDto.ProductTypeID,
+                Name = getProductDto.Name,
+                Price = getProductDto.Price,
+                Stock = getProductDto.Stock,
+                Image = getProductDto.Image
             };
         }
     }

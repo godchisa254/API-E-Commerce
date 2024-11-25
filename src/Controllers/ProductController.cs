@@ -9,18 +9,32 @@ using taller1.src.Mappers;
 
 namespace taller1.src.Controllers
 {
+    /// <summary>
+    /// Controlador para la gestión de productos.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository _productRepository;
         private readonly Cloudinary _cloudinary;
+
+        /// <summary>
+        /// Inicializa una nueva instancia del controlador de productos.
+        /// </summary>
+        /// <param name="productRepository">Repositorio de productos.</param>
+        /// <param name="cloudinary">Instancia de Cloudinary para la carga de imágenes.</param>
         public ProductController(IProductRepository productRepository, Cloudinary cloudinary)
         {
             _productRepository = productRepository;
             _cloudinary = cloudinary;
         }
 
+        /// <summary>
+        /// Obtiene todos los productos con soporte para paginación, ordenamiento y filtrado.
+        /// </summary>
+        /// <param name="query">Objeto de consulta para ordenar, filtrar y paginar los resultados.</param>
+        /// <returns>Lista de productos en formato DTO.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
@@ -44,6 +58,11 @@ namespace taller1.src.Controllers
             return Ok(productDtos);
         }
 
+        /// <summary>
+        /// Obtiene un producto específico por su ID.
+        /// </summary>
+        /// <param name="id">ID del producto.</param>
+        /// <returns>Producto en formato DTO si se encuentra, o un error 404 si no se encuentra.</returns>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
@@ -61,6 +80,11 @@ namespace taller1.src.Controllers
             return Ok(productDto);
         }
 
+        /// <summary>
+        /// Crea un nuevo producto con la información proporcionada.
+        /// </summary>
+        /// <param name="request">DTO que contiene los datos del producto a crear.</param>
+        /// <returns>Producto creado con el código de estado 201.</returns>
         [HttpPost]
         [Consumes("multipart/form-data")]
         [Authorize (Roles = "Admin")] 
@@ -87,7 +111,13 @@ namespace taller1.src.Controllers
             await _productRepository.CreateProduct(productModel);
             return CreatedAtAction(nameof(GetById), new { id = productModel.ID }, productModel.ToGetProductDto());
         }
-        
+
+        /// <summary>
+        /// Actualiza un producto existente con los nuevos datos.
+        /// </summary>
+        /// <param name="id">ID del producto a actualizar.</param>
+        /// <param name="request">DTO que contiene los datos actualizados del producto.</param>
+        /// <returns>Producto actualizado en formato DTO, o error 404 si no se encuentra.</returns>
         [HttpPut]
         [Route("{id:int}")]
         [Consumes("multipart/form-data")]
@@ -123,6 +153,11 @@ namespace taller1.src.Controllers
             return Ok(productModel.ToGetProductDto());
         }
 
+        /// <summary>
+        /// Elimina un producto específico por su ID.
+        /// </summary>
+        /// <param name="id">ID del producto a eliminar.</param>
+        /// <returns>Producto eliminado en formato DTO, o error 404 si no se encuentra.</returns>
         [HttpDelete]
         [Route("{id:int}")]
         [Authorize (Roles = "Admin")]
@@ -140,7 +175,12 @@ namespace taller1.src.Controllers
             }
             return Ok(product.ToGetProductDto());
         }
-        
+
+        /// <summary>
+        /// Carga una imagen para un producto en Cloudinary.
+        /// </summary>
+        /// <param name="image">Imagen que se va a cargar.</param>
+        /// <returns>URL de la imagen cargada o null si hay un error.</returns>
         private async Task<string?> UploadImage(IFormFile image)
         {
             if(image == null || image.Length == 0)
