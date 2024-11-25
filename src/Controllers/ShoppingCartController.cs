@@ -52,12 +52,24 @@ namespace taller1.src.Controllers
                 {
                     return NotFound("Shopping cart not found or is empty.");
                 }
+                var productId = cart.ShoppingCartItems.FirstOrDefault()?.ProductID;
+                if (productId == null)
+                {
+                    return BadRequest("Product ID not found in the shopping cart items.");
+                }
+
+                var product = await _productRepository.GetById(productId.Value);
+
+                if (product == null)
+                {
+                    return BadRequest("Product does not exist.");
+                }
                 var cartItems = cart.ShoppingCartItems.Select(item => new
                 {
-                    item.Product.Name,
-                    item.Product.Price,
+                    product.Name,
+                    product.Price,
                     item.Quantity,
-                    TotalPrice = item.Product.Price * item.Quantity
+                    TotalPrice = product.Price * item.Quantity
                 });
 
                 return Ok(cartItems);
@@ -94,10 +106,15 @@ namespace taller1.src.Controllers
 
                 var existingItem = cart.ShoppingCartItems
                     .FirstOrDefault(item => item.ProductID == productId);
+                var product = await _productRepository.GetById(productId); 
+                if (product == null)
+                {
+                    return BadRequest("Product does not exist.");
+                }
 
                 if (existingItem != null)
                 {
-                    if (existingItem.Product.Stock < existingItem.Quantity + quantity)
+                    if (product.Stock < existingItem.Quantity + quantity)
                     {
                         return BadRequest("Not enough stock available.");
                     }
@@ -105,7 +122,6 @@ namespace taller1.src.Controllers
                 }
                 else
                 { 
-                    var product = await _productRepository.GetById(productId); 
                     if (product == null)
                     {
                         return NotFound("Product not found.");
@@ -120,8 +136,6 @@ namespace taller1.src.Controllers
                         ShoppingCartID = cart.ID,
                         ProductID = product.ID,
                         Quantity = quantity,
-                        ShoppingCart = cart,
-                        Product = product
                     });
                     Console.WriteLine("Product added to cart");
                 } 
@@ -130,10 +144,10 @@ namespace taller1.src.Controllers
 
                 var cartItems = cart.ShoppingCartItems.Select(item => new
                 {
-                    item.Product.Name,
-                    item.Product.Price,
+                    product.Name,
+                    product.Price,
                     item.Quantity,
-                    TotalPrice = item.Product.Price * item.Quantity
+                    TotalPrice = product.Price * item.Quantity
                 });
 
                 return Ok(cartItems);
@@ -171,6 +185,11 @@ namespace taller1.src.Controllers
 
                 var existingItem = cart.ShoppingCartItems
                     .FirstOrDefault(item => item.ProductID == productId);
+                var product = await _productRepository.GetById(productId); 
+                if (product == null)
+                {
+                    return BadRequest("Product does not exist.");
+                }
 
                 if (existingItem == null)
                 {
@@ -187,10 +206,10 @@ namespace taller1.src.Controllers
 
                 var cartItems = cart.ShoppingCartItems.Select(item => new
                 {
-                    item.Product.Name,
-                    item.Product.Price,
+                    product.Name,
+                    product.Price,
                     item.Quantity,
-                    TotalPrice = item.Product.Price * item.Quantity
+                    TotalPrice = product.Price * item.Quantity
                 });
 
                 return Ok(cartItems);
@@ -227,6 +246,11 @@ namespace taller1.src.Controllers
 
                 var existingItem = cart.ShoppingCartItems
                     .FirstOrDefault(item => item.ProductID == productId);
+                var product = await _productRepository.GetById(productId); 
+                if (product == null)
+                {
+                    return BadRequest("Product does not exist.");
+                }
 
                 if (existingItem == null)
                 {
@@ -238,10 +262,10 @@ namespace taller1.src.Controllers
 
                 var cartItems = cart.ShoppingCartItems.Select(item => new
                 {
-                    item.Product.Name,
-                    item.Product.Price,
+                    product.Name,
+                    product.Price,
                     item.Quantity,
-                    TotalPrice = item.Product.Price * item.Quantity
+                    TotalPrice = product.Price * item.Quantity
                 });
 
                 return Ok(cartItems);
