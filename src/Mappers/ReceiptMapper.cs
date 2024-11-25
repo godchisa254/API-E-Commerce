@@ -1,16 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using taller1.src.Dtos.ReceiptDtos;
 using taller1.src.Models;
 
 namespace taller1.src.Mappers
 {
+    /// <summary>
+    /// Proporciona métodos para mapear entre la entidad <see cref="Receipt"/> y sus DTOs.
+    /// </summary>
     public static class ReceiptMapper
     {
-        
-        // Mapeo de receiptModel a GetReceiptDto
+        /// <summary>
+        /// Convierte un modelo de boleta en un DTO para la respuesta.
+        /// </summary>
+        /// <param name="receiptModel">El modelo de boleta a convertir.</param>
+        /// <returns>Un objeto <see cref="GetReceiptDto"/> que representa la boleta.</returns>
         public static GetReceiptDto ToGetReceiptDto(this Receipt receiptModel)
         {
             return new GetReceiptDto
@@ -26,7 +28,13 @@ namespace taller1.src.Mappers
                 ReceiptItemDetailsDto = receiptModel.ReceiptItemDetails.Select(item => item.ToReceiptItemDetailsDto()).ToList()
             };
         }
-        // Mapeo de CreateReceiptRequestDto a receiptModel
+
+        /// <summary>
+        /// Convierte un DTO de creación de boleta en un modelo de boleta.
+        /// </summary>
+        /// <param name="createReceiptDto">El DTO con los datos de la boleta.</param>
+        /// <param name="shoppingCart">El carrito de compras asociado a la boleta.</param>
+        /// <returns>Un objeto <see cref="Receipt"/> inicializado con los datos proporcionados.</returns>
         public static Receipt ToReceiptModel(this CreateReceiptRequestDto createReceiptDto, ShoppingCart shoppingCart)
         {
             var total = shoppingCart.ShoppingCartItems.Sum(item => item.Product.Price * item.Quantity);
@@ -54,7 +62,12 @@ namespace taller1.src.Mappers
                 Total = total
             };
         }
-        // Mapeo de receiptItemDetailModel a ReceiptItemDetailDto
+
+        /// <summary>
+        /// Convierte un modelo de detalles de artículo de recibo en un DTO.
+        /// </summary>
+        /// <param name="receiptItemDetailsModel">El modelo de detalles del artículo del recibo.</param>
+        /// <returns>Un objeto <see cref="ReceiptItemDetailDto"/> que representa el artículo del recibo.</returns>
         public static ReceiptItemDetailDto ToReceiptItemDetailsDto(this ReceiptItemDetail receiptItemDetailsModel)
         {
             return new ReceiptItemDetailDto

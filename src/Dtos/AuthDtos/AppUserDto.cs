@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace taller1.src.Dtos.AuthDtos
 {
@@ -18,7 +14,7 @@ namespace taller1.src.Dtos.AuthDtos
         public string Id { get; set; } = string.Empty;
         
         /// <summary>
-        /// RUT del usuario. Este campo es obligatorio y debe tener un máximo de 12 caracteres.
+        /// RUT del usuario. Este campo es obligatorio, debe tener un máximo de 12 caracteres y se almacena como varchar.
         /// </summary>
         [Required]
         [StringLength(12)]
@@ -41,7 +37,7 @@ namespace taller1.src.Dtos.AuthDtos
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
-        /// Indica si el usuario está habilitado en el sistema. Por defecto, está habilitado.
+        /// Indica si el usuario está habilitado para iniciar sesión en el sistema. Por defecto, está habilitado.
         /// </summary>
         public bool enabledUser { get; set; } = true;
 
