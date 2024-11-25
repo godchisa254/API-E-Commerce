@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using taller1.src.Data;
-using taller1.src.Data.Migrations;
 using taller1.src.Helpers;
 using taller1.src.Interface;
 using taller1.src.Models;
@@ -137,7 +136,6 @@ using(var scope = app.Services.CreateScope())
 
 }
 
-//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

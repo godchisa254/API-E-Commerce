@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using taller1.src.Dtos.AuthDtos;
-using taller1.src.Models;
 
 namespace taller1.src.Dtos
 {
