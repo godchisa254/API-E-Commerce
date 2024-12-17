@@ -14,7 +14,15 @@ using taller1.src.Repository;
 using taller1.src.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")  
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 Env.Load();
 
 var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
@@ -136,6 +144,7 @@ using(var scope = app.Services.CreateScope())
 
 }
 
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
