@@ -52,10 +52,18 @@ namespace taller1.src.Controllers
                 }
             }
 
-            var products = await _productRepository.GetAll(query);
+            var (products, totalCount) = await _productRepository.GetAll(query);
             var productDtos = products.Select(x => x.ToGetProductDto()).ToList();
+            var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
 
-            return Ok(productDtos);
+            var response = new
+            {
+                Items = productDtos,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
+
+            return Ok(response);
         }
 
         /// <summary>

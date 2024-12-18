@@ -28,7 +28,7 @@ namespace taller1.src.Repository
         /// </summary>
         /// <param name="query">El objeto <see cref="QueryObject"/> que contiene los filtros, el número de página y el tamaño de página para la consulta.</param>
         /// <returns>Devuelve una lista de objetos <see cref="Product"/> que representan los productos del sistema.</returns>
-        public async Task<List<Product>> GetAll(QueryObject query)
+        public async Task<(List<Product>, int)> GetAll(QueryObject query)
         {
             var pageNumber = query.PageNumber > 0 ? query.PageNumber : 1;
             var pageSize = query.PageSize > 0 ? query.PageSize : 10;
@@ -60,9 +60,10 @@ namespace taller1.src.Repository
 
             var skipNumber = (pageNumber - 1) * pageSize;
 
+            var totalCount = await products.CountAsync();
             var productModels = await products.Skip(skipNumber).Take(pageSize).ToListAsync();
 
-            return productModels;
+            return (productModels, totalCount);
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace taller1.src.Interface
         /// </summary>
         /// <param name="query">El objeto <see cref="QueryObject"/> que contiene los filtros, el número de página y el tamaño de página para la consulta.</param>
         /// <returns>Devuelve una lista de objetos <see cref="Product"/> que representan los productos del sistema.</returns>
-        Task<List<Product>> GetAll(QueryObject query);
+        Task<(List<Product>, int)> GetAll(QueryObject query);
 
         /// <summary>
         /// Obtiene un producto específico por su identificador único.
