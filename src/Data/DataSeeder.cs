@@ -55,16 +55,16 @@ namespace taller1.src.Data
                 Gender = int.Parse(adminGender)
             };
 
-            // Obtiene la ministrador desde las variables de entorno.
-            string adminpass = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")!;
+            // Obtiene la contraseña del administrador desde las variables de entorno.
+            string adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")!;
 
             // Crea el administrador en el sistema.
-            var createUser = await _seederRepository.CreateAdminAsync(admin, adminpass);
+            var createUser = await _seederRepository.CreateAdminAsync(admin, adminPassword);
 
-            // Si la creación fue exitosa, se le asigna el rol de administrador.
+            // Si la creación fue exitosa, se le asigna el rol de administrador. 
             if (createUser.Succeeded)
             {
-                await _seederRepository.AddRole(admin, "Admin");
+                await _seederRepository.AddRole(admin, "Admin"); 
             }
         }
 
