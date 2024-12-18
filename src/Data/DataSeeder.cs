@@ -55,11 +55,11 @@ namespace taller1.src.Data
                 Gender = int.Parse(adminGender)
             };
 
-            // Obtiene la contraseña del administrador desde las variables de entorno.
-            string adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")!;
+            // Obtiene la ministrador desde las variables de entorno.
+            string adminpass = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")!;
 
             // Crea el administrador en el sistema.
-            var createUser = await _seederRepository.CreateAdminAsync(admin, adminPassword);
+            var createUser = await _seederRepository.CreateAdminAsync(admin, adminpass);
 
             // Si la creación fue exitosa, se le asigna el rol de administrador.
             if (createUser.Succeeded)
