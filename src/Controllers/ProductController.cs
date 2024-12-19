@@ -222,7 +222,7 @@ namespace taller1.src.Controllers
             return uploadResult.SecureUrl.AbsoluteUri;
         }
         
-        [HttpGet("/types")]
+        [HttpGet("types")]
         public async Task<IActionResult> GetProductTypes()
         {
             var productTypes = await _productRepository.GetProductTypes();
