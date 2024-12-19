@@ -221,5 +221,13 @@ namespace taller1.src.Controllers
 
             return uploadResult.SecureUrl.AbsoluteUri;
         }
+        
+        [HttpGet("/types")]
+        public async Task<IActionResult> GetProductTypes()
+        {
+            var productTypes = await _productRepository.GetProductTypes();
+            var result = productTypes.Select(pt => new { pt.ID, pt.Type });
+            return Ok(result);
+        }
     }
 }

@@ -53,5 +53,6 @@ namespace taller1.src.Interface
         /// <param name="productTypeId">El identificador del tipo de producto a verificar.</param>
         /// <returns>Devuelve <c>true</c> si el producto ya existe, de lo contrario <c>false</c>.</returns>
         Task<bool> ProductExists(string? name, int? productTypeId);
+        Task<List<ProductType>> GetProductTypes();
     }
 }

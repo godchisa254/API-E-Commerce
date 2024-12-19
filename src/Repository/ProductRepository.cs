@@ -149,5 +149,9 @@ namespace taller1.src.Repository
                 .AnyAsync(p => p.Name == name && p.ProductTypeID == productTypeId);
         }
 
+        public async Task<List<ProductType>> GetProductTypes()
+        {
+            return await _context.ProductTypes.ToListAsync();
+        }
     }
 }
