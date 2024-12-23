@@ -7,6 +7,13 @@ namespace taller1.src.Dtos.ProductDtos
     public class GetProductDto
     {
         /// <summary>
+        /// Identificador único del producto.
+        /// </summary>
+        /// <remarks>
+        /// Es generado automáticamente por la base de datos.
+        /// </remarks>
+        public int ID { get; set; }
+        /// <summary>
         /// Identificador del tipo de producto al que pertenece.
         /// </summary>
         /// <remarks>

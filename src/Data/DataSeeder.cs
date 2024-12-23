@@ -61,10 +61,10 @@ namespace taller1.src.Data
             // Crea el administrador en el sistema.
             var createUser = await _seederRepository.CreateAdminAsync(admin, adminPassword);
 
-            // Si la creación fue exitosa, se le asigna el rol de administrador.
+            // Si la creación fue exitosa, se le asigna el rol de administrador. 
             if (createUser.Succeeded)
             {
-                await _seederRepository.AddRole(admin, "Admin");
+                await _seederRepository.AddRole(admin, "Admin"); 
             }
         }
 

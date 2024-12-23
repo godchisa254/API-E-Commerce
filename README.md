@@ -1,47 +1,15 @@
-"# taller1" 
-INSTRUCCIONES PARA EJECUTAR EL PROYECTO
+# EN
+## How to run this project.
+1. Clone the repository in your prefered folder pasting the following `git clone https://github.com/godchisa254/API-E-Commerce` in the terminal (Windows cmd, VSCode terminal or any terminal at all).
+2. Without leaving the terminal paste the following `cd .\API-E-Commerce\` and to finally run the project paste the following `dotnet watch run --urls "http://localhost:5290"`.
 
-REQUISITOS PREVIOS
-Antes de comenzar, asegúrate de cumplir con los siguientes requisitos:
-1. Tener instalado .NET SDK 
-2. Contar con una cuenta en Cloudinary para la gestión de archivos multimedia.
-3. Acceso al repositorio del proyecto.
+_Note: If you are going to use a localhost address other than `localhost:5290`, then you must change the `{baseurl}` in the postman collection too._ 
 
-PASOS PARA CONFIGURAR Y EJECUTAR EL PROYECTO
+# ES  
+## Cómo ejecutar este proyecto.  
+1. Clona el repositorio en tu carpeta preferida pegando el siguiente comando en la terminal (cmd de Windows, terminal de VSCode o cualquier terminal):  
+   `git clone https://github.com/godchisa254/API-E-Commerce`  
 
-1. Clonar el repositorio
-   En la terminal, navega a la carpeta donde deseas almacenar el proyecto y ejecuta el siguiente comando:
-   git clone <URL-del-repositorio>
+2. Sin salir de la terminal, ejecuta el siguiente comando para entrar en la carpeta del proyecto: `cd .\API-E-Commerce\` y finalmente, ejecuta el siguiente comando para iniciar el proyecto: `dotnet watch run --urls "http://localhost:5290"`.
 
-2. Configurar las credenciales
-   Para que el proyecto funcione correctamente, realiza las siguientes configuraciones:
-
-   Crear un archivo .env
-   En la raíz del proyecto, crea un archivo llamado .env con el siguiente contenido "informacion sensible":
-   
-   Crear un archivo appSettings.json
-   En la raíz del proyecto, crea un archivo llamado appSettings.json con la configuración de Cloudinary. Este archivo debe tener el siguiente formato:
-   {
-       "CloudinarySettings": {
-           "CloudName": "tu_cloud_name",
-           "ApiKey": "tu_api_key",
-           "ApiSecret": "tu_api_secret"
-       },
-       "Logging": {
-           "LogLevel": {
-               "Default": "Information",
-               "Microsoft": "Warning",
-               "Microsoft.Hosting.Lifetime": "Information"
-           }
-       },
-       "AllowedHosts": "*"
-   }
-  
-
-3. Ejecutar el proyecto
-   Para iniciar el proyecto, abre la terminal en la carpeta raíz y ejecuta el siguiente comando:
-   dotnet watch run
-   Esto iniciará el servidor y el proyecto estará listo para usarse.
-
-NOTAS IMPORTANTES
-1. Si tienes dudas sobre cómo obtener tus credenciales de Cloudinary, consulta su documentación oficial: https://cloudinary.com/documentation
+_Nota: Si vas a utilizar una dirección de host local aparte de `localhost:5290`, entonces debes cambiar la `{baseurl}` en la colección de postman también._
