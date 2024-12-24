@@ -26,7 +26,7 @@ namespace taller1.src.Repository
         /// <param name="context">Contexto de la base de datos.</param>
         /// <param name="userManager">Gestor de usuarios para manejar operaciones relacionadas con usuarios.</param>
         /// <param name="signInManager">Gestor de inicio de sesión para manejar la autenticación de los usuarios.</param>
-        public AuthRepository(ApplicationDBContext context, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
+        public AuthRepository(ApplicationDBContext context, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
@@ -77,11 +77,11 @@ namespace taller1.src.Repository
 
             if (appUser == null)
             {
-                throw new Exception("Usuario no encontrado");;
+                throw new Exception("Usuario no encontrado"); ;
             }
 
-            AppUserDto appUserDto = appUser.ToUserDto(); 
-            return appUserDto; 
+            AppUserDto appUserDto = appUser.ToUserDto();
+            return appUserDto;
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace taller1.src.Repository
         /// <returns>Devuelve el nombre del rol del usuario o <c>null</c> si no tiene asignado un rol.</returns>
         public async Task<string?> GetRolbyEmail(string email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email); 
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             var rol = await _userManager.GetRolesAsync(user!);
 
             return rol.FirstOrDefault();
@@ -103,7 +103,7 @@ namespace taller1.src.Repository
         /// <param name="id">El identificador único del usuario.</param>
         /// <param name="request">El objeto <see cref="ChangePasswordDto"/> con los detalles de la nueva contraseña.</param>
         /// <returns>Devuelve un <see cref="IdentityResult"/> con el resultado de la operación.</returns>
-        public async Task<IdentityResult> UpdatePassword( string id, ChangePasswordDto request)
+        public async Task<IdentityResult> UpdatePassword(string id, ChangePasswordDto request)
         {
             var user = await _userManager.FindByIdAsync(id);
 
@@ -134,19 +134,19 @@ namespace taller1.src.Repository
             var pageSize = query.PageSize > 0 ? query.PageSize : 10;
             var users = _context.Users.AsQueryable();
 
-            if(!string.IsNullOrWhiteSpace(query.Name))
+            if (!string.IsNullOrWhiteSpace(query.Name))
             {
                 var normalizedQueryName = query.Name.Trim().ToLower();
                 users = users.Where(u => u.Name.ToLower().Contains(normalizedQueryName));
             }
-            
+
             if (query.enabledUser.HasValue)
             {
                 if (query.enabledUser.Value) { users = users.Where(u => u.enabledUser); }
-                else                         { users = users.Where(u => !u.enabledUser); }
+                else { users = users.Where(u => !u.enabledUser); }
             }
 
-            if(!string.IsNullOrWhiteSpace(query.SortBy))
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
                 var propertyInfo = typeof(AppUser).GetProperty(query.SortBy);
                 if (propertyInfo != null)
@@ -160,7 +160,7 @@ namespace taller1.src.Repository
             }
 
             var skipNumber = (pageNumber - 1) * pageSize;
-            var AppUserDto = await users.Skip(skipNumber).Take(pageSize).ToListAsync(); 
+            var AppUserDto = await users.Skip(skipNumber).Take(pageSize).ToListAsync();
             return AppUserDto.Select(u => u.ToGetUserDto()).ToList();
         }
 
@@ -173,12 +173,12 @@ namespace taller1.src.Repository
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Rut == rut);
 
-            if(user == null)
+            if (user == null)
             {
                 throw new Exception("Usuario no encontrado");
             }
 
-            user.enabledUser = !user.enabledUser; 
+            user.enabledUser = !user.enabledUser;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
@@ -197,8 +197,8 @@ namespace taller1.src.Repository
                 throw new Exception("Usuario no encontrado");
             }
 
-            AppUserDto appUserDto = appUser.ToUserDto(); 
-            return appUserDto; 
+            AppUserDto appUserDto = appUser.ToUserDto();
+            return appUserDto;
         }
 
         /// <summary>
@@ -216,20 +216,20 @@ namespace taller1.src.Repository
                 user!.Name = request.Name;
             }
 
-            if (request.Birthdate!= null )
-            { 
-                user!.Birthdate = request.Birthdate!.Value; 
+            if (request.Birthdate != null)
+            {
+                user!.Birthdate = request.Birthdate!.Value;
             }
 
             if (request.Gender != null)
             {
-               user!.Gender = request.Gender.Value;
+                user!.Gender = request.Gender.Value;
             }
 
             await _context.SaveChangesAsync();
             await _userManager.UpdateSecurityStampAsync(user!);
-            return IdentityResult.Success;  
-        }   
+            return IdentityResult.Success;
+        }
 
         /// <summary>
         /// Elimina una cuenta de usuario del sistema.
@@ -245,7 +245,7 @@ namespace taller1.src.Repository
                 throw new Exception("Usuario no encontrado");
             }
 
-            return await _userManager.DeleteAsync(user); 
+            return await _userManager.DeleteAsync(user);
         }
 
         /// <summary>
@@ -258,13 +258,13 @@ namespace taller1.src.Repository
         {
             var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-            if(appUser == null)
+            if (appUser == null)
             {
                 throw new Exception("Usuario no encontrado");
             }
 
-            var checkPassword= await _signInManager.CheckPasswordSignInAsync(appUser!, newPassword, false);
-            return IdentityResult.Success; 
+            var checkPassword = await _signInManager.CheckPasswordSignInAsync(appUser!, newPassword, false);
+            return IdentityResult.Success;
         }
 
         /// <summary>
@@ -275,15 +275,20 @@ namespace taller1.src.Repository
         /// <returns>Devuelve un <see cref="IdentityResult"/> con el resultado de la operación.</returns>
         public async Task<IdentityResult> checkPasswordbyEmail(string email, string password)
         {
-            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);;
+            var appUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email); ;
 
-            if(appUser == null)
+            if (appUser == null)
             {
                 throw new Exception("Usuario no encontrado");
             }
 
-            var checkPassword= await _signInManager.CheckPasswordSignInAsync(appUser!, password, false);
-           return IdentityResult.Success; 
+            var checkPassword = await _signInManager.CheckPasswordSignInAsync(appUser!, password, false);
+            if (checkPassword.Succeeded)
+            {
+                return IdentityResult.Success;
+            }
+
+            return IdentityResult.Failed();
         }
     }
 }
