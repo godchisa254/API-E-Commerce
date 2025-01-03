@@ -53,7 +53,7 @@ namespace taller1.src.Controllers
 
                 if (exist)
                 {
-                    return StatusCode(409, "El rut ingresado ya existe");
+                    return StatusCode(409, new { message ="El rut ingresado ya existe"});
                 }
                 else if (!ModelState.IsValid)
                 {
@@ -62,20 +62,20 @@ namespace taller1.src.Controllers
 
                 if (registerDto.Birthdate.Year >= DateTime.Now.Year)
                 {
-                    return BadRequest("La fecha de nacimiento debe ser menor a la actual");
+                    return BadRequest(new { message ="La fecha de nacimiento debe ser menor a la actual"});
                 }
 
                 AppUser appUser = registerDto.ToUserRegister();
 
                 if (string.IsNullOrEmpty(registerDto.Password))
                 {
-                    return BadRequest("La contraseña es requerida");
+                    return BadRequest(new { message ="La contraseña es requerida"});
                 }
 
                 if (registerDto.Password != registerDto.ConfirmPassword)
                 {
                     return BadRequest(
-                        "La contraseña y Confirmacion de contraseña deben ser iguales"
+                        new { message ="La contraseña y Confirmacion de contraseña deben ser iguales"}
                     );
                 }
 
