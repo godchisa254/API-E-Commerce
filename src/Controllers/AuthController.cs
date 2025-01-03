@@ -135,10 +135,13 @@ namespace taller1.src.Controllers
                 checkLoginDto checkLogin = appUser.ToCheckLoginDto();
 
                 if (checkLogin == null)
-                    return Unauthorized("Correo o Contraseña Invalidos");
+                    return Unauthorized(new { message = "Correo o Contraseña Invalidos" });
 
                 if (!checkLogin.enabledUser)
-                    return Forbid("El usuario está deshabilitado y no puede iniciar sesión, contacte a un administador.");
+                    return new JsonResult(new { message = "El usuario está deshabilitado y no puede iniciar sesión, contacte a un administrador." })
+                    {
+                        StatusCode = StatusCodes.Status403Forbidden
+                    };
 
                 var result = await _authRepository.checkPasswordbyEmail(
                     loginDto.Email,
@@ -146,10 +149,13 @@ namespace taller1.src.Controllers
                 );
 
                 if (!result.Succeeded || appUser == null)
-                    return Unauthorized("Correo o Contraseña Invalidos");
+                    return Unauthorized(new { message = "Correo o Contraseña Invalidos" });
 
                 if (!appUser.enabledUser)
-                    return Forbid("El usuario está deshabilitado y no puede iniciar sesión, contacte a un administador.");
+                    return new JsonResult(new { message = "El usuario está deshabilitado y no puede iniciar sesión, contacte a un administrador." })
+                    {
+                        StatusCode = StatusCodes.Status403Forbidden
+                    };
 
                 string? appRol = await _authRepository.GetRolbyEmail(loginDto.Email);
                 string createToken;
@@ -189,13 +195,13 @@ namespace taller1.src.Controllers
                     newPasswordDto.Password
                 );
                 if (!checkPassword.Succeeded)
-                    return Unauthorized("Contraseña Invalida");
+                    return Unauthorized( new { message ="Contraseña Invalida"});
 
                 if (newPasswordDto.Password == newPasswordDto.NewPassword)
-                    return BadRequest("La nueva contraseña no puede ser igual a la anterior");
+                    return BadRequest(new { message ="La nueva contraseña no puede ser igual a la anterior"});
 
                 if (newPasswordDto.NewPassword != newPasswordDto.ConfirmNewPassword)
-                    return BadRequest("La nueva contraseña debe de coincidir con su confirmacion");
+                    return BadRequest(new { message ="La nueva contraseña debe de coincidir con su confirmacion"});
 
                 var result = await _authRepository.UpdatePassword(userId, newPasswordDto);
                 if (result.Succeeded)
@@ -282,12 +288,12 @@ namespace taller1.src.Controllers
 
                 if (!checkPassword.Succeeded)
                 {
-                    return Unauthorized("Contraseña Invalida");
+                    return Unauthorized( new { message ="Contraseña Invalida"});
                 }
 
                 if (deleteDto.Confirmation.ToLower() != "confirmo")
                 {
-                    return BadRequest("Eliminacion rechazada");
+                    return BadRequest( new{ message ="Eliminacion rechazada"});
                 }
 
                 var result = await _authRepository.DeleteAccount(userId);
@@ -297,7 +303,7 @@ namespace taller1.src.Controllers
                     return Ok("Cuenta eliminada correctamente");
                 }
 
-                return BadRequest("Fallo al eliminar cuenta");
+                return BadRequest( new { message ="Fallo al eliminar cuenta"});
             }
             catch (Exception e)
             {

@@ -211,7 +211,7 @@ namespace taller1.src.Repository
         {
             var user = await _userManager.FindByIdAsync(id);
 
-            if (!string.IsNullOrWhiteSpace(request.Name) || request.Name!.ToLower() != "string")
+            if (!string.IsNullOrWhiteSpace(request.Name) )
             {
                 user!.Name = request.Name;
             }
