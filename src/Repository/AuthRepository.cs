@@ -77,7 +77,7 @@ namespace taller1.src.Repository
 
             if (appUser == null)
             {
-                throw new Exception("Usuario no encontrado"); ;
+                throw new Exception( "Usuario no encontrado"); ;
             }
 
             AppUserDto appUserDto = appUser.ToUserDto();

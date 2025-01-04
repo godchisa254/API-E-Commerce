@@ -108,12 +108,12 @@ namespace taller1.src.Controllers
                         errors = errors.Select(e => e.Replace("Username", "Email")).ToList();
                     }
 
-                    return StatusCode(500, errors);
+                    return StatusCode(500, new { message = errors});
                 }
             }
             catch (Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { message = e.Message});
             }
         }
 
@@ -171,7 +171,7 @@ namespace taller1.src.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { message = ex.Message});
             }
         }
 
@@ -220,7 +220,7 @@ namespace taller1.src.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { message = e.Message});
             }
         }
 
@@ -257,7 +257,7 @@ namespace taller1.src.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { message = e.Message});
             }
         }
 
@@ -307,7 +307,7 @@ namespace taller1.src.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { message = e.Message});
             }
         }
     }
