@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using taller1.src.Dtos.shoppingCartDto;
 using taller1.src.Interface;
 using taller1.src.Models;
 
@@ -41,8 +42,63 @@ namespace taller1.src.Controllers
             string? userId = GetUserId();
             if (userId == null)
             {
+                return Unauthorized(new {message="User is not authenticated."});
+            }
+
+            try
+            { 
+                var cart = await GetCart(userId);
+
+                if (cart == null)
+                {
+                    return NotFound(new {message ="Shopping cart not found or is empty."});
+                }
+
+                var cartItems = new List<object>();
+
+                foreach (var item in cart.ShoppingCartItems)
+                {
+                    var product = await _productRepository.GetById(item.ProductID);
+
+                    if (product == null)
+                    {
+                        return BadRequest(new {message =$"Product with ID {item.ProductID} does not exist."});
+                    }
+
+                    cartItems.Add(new
+                    {
+                        product.ID,
+                        product.Name,
+                        product.Price,
+                        product.Image,
+                        item.Quantity,
+                        TotalPrice = product.Price * item.Quantity
+                    });
+                }
+
+                if (cartItems.Count == 0)
+                {
+                    return BadRequest( new {message ="No valid products in the shopping cart."});
+                }
+
+                return Ok(cartItems);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new {message =$"An error occurred: {ex.Message}"});
+            }
+        }
+
+
+        /**
+        public async Task<IActionResult> GetCart()
+        {
+            string? userId = GetUserId();
+            if (userId == null)
+            {
                 return Unauthorized("User is not authenticated.");
             }
+
 
             try
             { 
@@ -66,8 +122,10 @@ namespace taller1.src.Controllers
                 }
                 var cartItems = cart.ShoppingCartItems.Select(item => new
                 {
+                    product.ID,
                     product.Name,
                     product.Price,
+                    product.Image,
                     item.Quantity,
                     TotalPrice = product.Price * item.Quantity
                 });
@@ -79,6 +137,7 @@ namespace taller1.src.Controllers
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
+        **/
         
         /// <summary>
         /// Añade un producto al carrito de compras del usuario.
@@ -88,54 +147,56 @@ namespace taller1.src.Controllers
         /// <returns>Un resultado con los productos actualizados del carrito.</returns>
         [HttpPost("add_product")]
         [AllowAnonymous]
-        public async Task<IActionResult> AddToCart(int productId, int quantity)
+        public async Task<IActionResult> AddToCart([FromBody]ShoppingCartDto cartDto)
         {
             string? userId = GetUserId();
             if (userId == null)
             {
-                return Unauthorized("User is not authenticated.");
+                return Unauthorized(new {message ="User is not authenticated."});
             }
+
             try
             { 
+                
                 var cart = await GetCart(userId);
 
                 if (cart == null)
                 {
-                    return NotFound("Shopping cart not found or is empty.");
+                    return NotFound(new {message="Shopping cart not found or is empty."});
                 }
 
                 var existingItem = cart.ShoppingCartItems
-                    .FirstOrDefault(item => item.ProductID == productId);
-                var product = await _productRepository.GetById(productId); 
+                    .FirstOrDefault(item => item.ProductID == cartDto.ProductId);
+                var product = await _productRepository.GetById(cartDto.ProductId); 
                 if (product == null)
                 {
-                    return BadRequest("Product does not exist.");
+                    return BadRequest(new {message="Product does not exist."});
                 }
 
                 if (existingItem != null)
                 {
-                    if (product.Stock < existingItem.Quantity + quantity)
+                    if (product.Stock < existingItem.Quantity + cartDto.Quantity)
                     {
-                        return BadRequest("Not enough stock available.");
+                        return BadRequest(new {message="Not enough stock available."});
                     }
-                    existingItem.Quantity += quantity;
+                    existingItem.Quantity += cartDto.Quantity;
                 }
                 else
                 { 
                     if (product == null)
                     {
-                        return NotFound("Product not found.");
+                        return NotFound(new {message = "Product not found."});
                     }
-                    if (product.Stock < quantity)
+                    if (product.Stock < cartDto.Quantity)
                     {
-                        return BadRequest($"Not enough stock available for the product {product.Name}.");
+                        return BadRequest(new {message = $"Not enough stock available for the product {product.Name}."});
                     }
                     //TODO: use mapper
                     cart.ShoppingCartItems.Add(new ShoppingCartItem
                     {
                         ShoppingCartID = cart.ID,
                         ProductID = product.ID,
-                        Quantity = quantity,
+                        Quantity = cartDto.Quantity,
                     });
                     Console.WriteLine("Product added to cart");
                 } 
@@ -154,7 +215,7 @@ namespace taller1.src.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred: {ex.Message}");
+                return BadRequest(new { message =$"An error occurred: {ex.Message}"});
             }
         }
         
@@ -166,8 +227,9 @@ namespace taller1.src.Controllers
         /// <returns>Un resultado con los productos actualizados del carrito.</returns>
         [HttpPost("deduct_product")]
         [AllowAnonymous]
-        public async Task<IActionResult> RemoveFromCart(int productId, int quantity)
+        public async Task<IActionResult> RemoveFromCart([FromBody]ShoppingCartDto cartDto)
         {
+
             string? userId = GetUserId();
             if (userId == null)
             {
@@ -180,23 +242,23 @@ namespace taller1.src.Controllers
 
                 if (cart == null || !cart.ShoppingCartItems.Any())
                 { 
-                    return NotFound("Shopping cart is empty.");
+                    return NotFound(new  { Message ="Shopping cart is empty."});
                 }
 
                 var existingItem = cart.ShoppingCartItems
-                    .FirstOrDefault(item => item.ProductID == productId);
-                var product = await _productRepository.GetById(productId); 
+                    .FirstOrDefault(item => item.ProductID == cartDto.ProductId);
+                var product = await _productRepository.GetById(cartDto.ProductId); 
                 if (product == null)
                 {
-                    return BadRequest("Product does not exist.");
+                    return BadRequest(new { message ="Product does not exist."});
                 }
 
                 if (existingItem == null)
                 {
-                    return NotFound("Product not found in the cart.");
+                    return NotFound(new { message ="Product not found in the cart."});
                 }
  
-                existingItem.Quantity -= quantity;
+                existingItem.Quantity -= cartDto.Quantity;
                 if (existingItem.Quantity <= 0)
                 {
                     cart.ShoppingCartItems.Remove(existingItem);
@@ -216,7 +278,7 @@ namespace taller1.src.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred: {ex.Message}");
+                return BadRequest(new { message = $"An error occurred: {ex.Message}"});
             }
         } 
 
@@ -227,8 +289,9 @@ namespace taller1.src.Controllers
         /// <returns>Un resultado con los productos actualizados del carrito.</returns>
         [HttpDelete("remove_product")]
         [AllowAnonymous]
-        public async Task<IActionResult> RemoveProduct(int productId)
+        public async Task<IActionResult> RemoveProduct([FromBody]int productId)
         {
+
             string? userId = GetUserId();
             if (userId == null)
             {
