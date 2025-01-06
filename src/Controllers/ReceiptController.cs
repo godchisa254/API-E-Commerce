@@ -87,6 +87,7 @@ namespace taller1.src.Controllers
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)!;
             var userId = userIdClaim.Value;
+            
 
             try
             {

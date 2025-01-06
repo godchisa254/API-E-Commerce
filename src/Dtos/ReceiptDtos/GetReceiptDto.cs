@@ -17,6 +17,7 @@ namespace taller1.src.Dtos.ReceiptDtos
         /// Es una clave foránea que referencia a la entidad <see cref="AppUser"/>.
         /// </remarks>
         public string UserID { get; set; } = string.Empty; 
+        
 
         /// <summary>
         /// País asociado a la dirección de la boleta.

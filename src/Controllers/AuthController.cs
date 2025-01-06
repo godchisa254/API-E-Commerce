@@ -310,5 +310,25 @@ namespace taller1.src.Controllers
                 return StatusCode(500, new { message = e.Message});
             }
         }
+
+         [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(string id)
+        {
+            try
+            {
+                var userDto = await _authRepository.GetUserByid(id);
+                return Ok(userDto); 
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+
+        
+
     }
+
+    
 }
