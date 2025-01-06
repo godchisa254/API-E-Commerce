@@ -447,6 +447,7 @@ namespace taller1.src.Controllers
         /// Guarda el carrito de compras de un usuario en las cookies.
         /// </summary>
         /// <param name="userId">El ID del usuario.</param>
+        /// 
         /// <param name="cart">El carrito de compras.</param>
         private Task SaveCartToCookies(string userGuid, ShoppingCart cart)
         {

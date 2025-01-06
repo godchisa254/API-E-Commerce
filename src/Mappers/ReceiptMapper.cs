@@ -59,7 +59,8 @@ namespace taller1.src.Mappers
                 Commune = createReceiptDto.Commune,
                 Street = createReceiptDto.Street,
                 Date = DateOnly.FromDateTime(DateTime.Now),
-                Total = total
+                Total = total,
+                ReceiptItemDetails = receiptItems
             };
         }
 
